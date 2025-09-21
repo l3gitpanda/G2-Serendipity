@@ -47,21 +47,26 @@ int main() {
 
         switch (choice) {
             case '1':
+            pressEnterToContinue();
             // cashier()
             break;
             case '2':
+            pressEnterToContinue();
             // invmenu()
             break;
             case '3':
+            pressEnterToContinue();
             // reports()
             break;
             case '4':
+            pressEnterToContinue();
             // do something
             break;
             default:
             choiceIsValid = false; 
             // Set choice to invalid so that loops runs again
             cout << endl << "Invalid input, please try again" << endl;
+            pressEnterToContinue();
             break;
         }
 
