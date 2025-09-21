@@ -14,4 +14,6 @@ void clearScreen();
 
 void pressEnterToContinue();
 
+struct navigationMenu;
+
 #endif // UTILS_H
