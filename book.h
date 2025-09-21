@@ -20,4 +20,6 @@ struct book {
     float price;
 };
 
+bool validateDateInput();
+
 #endif // BOOK_H
