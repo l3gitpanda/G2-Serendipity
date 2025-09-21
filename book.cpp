@@ -11,7 +11,7 @@ CS1B – G2: Serendipity
 
 using namespace std;
 
-bool validateDateInput() {
+bool validateDateInput(string date) {
     return true;
 }
 

@@ -20,7 +20,7 @@ struct book {
     float price;
 };
 
-bool validateDateInput();
+bool validateDateInput(string date);
 
 string sanitizeDateInput(string date);
 
