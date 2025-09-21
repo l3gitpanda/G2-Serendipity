@@ -9,10 +9,17 @@ CS1B – G2: Serendipity
 
 #include <iostream>
 #include "utils.h"
+#include <limits>
 
 using namespace std;
 
 void clearScreen() {
     // Clear the screen
     cout << "\033[2J\033[1;1H" << endl;
+}
+
+void pressAnyKeyToContinue() {
+    cout << "Press any key to continue...";
+    cin.ignore(numeric_limits<std::streamsize>::max());
+    // Ignore next input
 }
