@@ -13,7 +13,7 @@ CS1B – G2: Serendipity
 using namespace std;
 
 void printMainMenu() {
-    int optionLabelPadding = 40;
+    int optionLabelPadding = 10;
     /*
     Distance between option label containers and 
     their corresponding label number
