@@ -18,7 +18,7 @@ void clearScreen() {
     cout << "\033[2J\033[1;1H" << endl;
 }
 
-void pressAnyKeyToContinue() {
+void pressEnterToContinue() {
     cout << "Press any key to continue...";
     cin.ignore(numeric_limits<std::streamsize>::max());
     // Ignore next input

@@ -12,6 +12,6 @@ CS1B – G2: Serendipity
 
 void clearScreen();
 
-void pressAnyKeyToContinue();
+void pressEnterToContinue();
 
 #endif // UTILS_H
