@@ -33,10 +33,10 @@ struct navigationMenu { // Use struct for reusability
             their corresponding label number
         */
 
-        cout << right << setw(40) << "SERENDIPITY" << endl << 
+        cout << right << setw(40) << "SERENDIPITY" << endl << // Print title
             right << setw(50) << heading << endl;
 
-        for (size_t i = 0; i < options.size(); i++) {
+        for (size_t i = 0; i < options.size(); i++) { // Print each option
             cout << right << setw(optionNumberPadding) << i + 1 << ":" <<
                 right << setw(optionLabelPadding) << options[i] << endl;
         }
