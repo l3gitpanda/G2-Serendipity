@@ -21,14 +21,14 @@ void pressEnterToContinue();
 struct navigationMenu { // Use struct for reusability
     string heading;
     vector<string> options;
-    void print(int optionNumberPadding, int optionLabelPadding) {
+    void print(int optionNumberPadding, int optionLabelMargin) {
         /*
         optionNumberPadding:
             Distance between option number containers and
             there corresponding label
         */
         /*
-        optionLabelPadding:
+        optionLabelMargin:
             Distance between option label containers and 
             their corresponding label number
         */
@@ -38,7 +38,7 @@ struct navigationMenu { // Use struct for reusability
 
         for (size_t i = 0; i < options.size(); i++) { // Print each option
             cout << right << setw(optionNumberPadding) << i + 1 << "." <<
-                right << setw(optionLabelPadding) << "" << 
+                right << setw(optionLabelMargin) << "" << 
                 left << setw(options[i].size()) << options[i] << endl;
         }
     }
