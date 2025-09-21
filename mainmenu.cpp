@@ -61,7 +61,7 @@ int main() {
             break;
             case '4':
             pressEnterToContinue();
-            // do something
+            return;
             break;
             default:
             choiceIsValid = false; 
