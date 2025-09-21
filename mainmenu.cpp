@@ -15,21 +15,17 @@ CS1B – G2: Serendipity
 using namespace std;
 
 void printMainMenu() {
-    int optionLabelPadding = 10;
-    /*
-    Distance between option label containers and 
-    their corresponding label number
-    */
+    navigationMenu mainMenu(
+        "Main Menu",
+        {
+            "Cashier Module",
+            "Inventory Database Module",
+            "Report Module",
+            "Exit"
+        }
+    ); // Initialize main menu
 
-    cout << right << setw(40) << "SERENDIPITY" << endl << 
-        right << setw(12) << "1:" << 
-        right << setw(optionLabelPadding) << "Cashier Module" << endl <<
-        right << setw(12) << "2:" << 
-        right << setw(optionLabelPadding) << "Inventory Database Module" << endl <<
-        right << setw(12) << "3:" << 
-        right << setw(optionLabelPadding) << "Report Module" << endl <<
-        right << setw(12) << "4:" << 
-        right << setw(optionLabelPadding) << "Exit" << endl;
+    mainMenu.print(); // Print main menu
 }
 
 int main() {
