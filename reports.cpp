@@ -20,7 +20,7 @@ void printReportsMenu() {
         {
             "Inventory Listing",
             "Inventory Wholesale Value",
-            "Inventory Retail Value"
+            "Inventory Retail Value",
             "Listing by Quantity",
             "Listing by Cost",
             "Listing by Age",
