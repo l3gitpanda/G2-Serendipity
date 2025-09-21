@@ -38,7 +38,7 @@ struct navigationMenu { // Use struct for reusability
 
         for (size_t i = 0; i < options.size(); i++) { // Print each option
             cout << right << setw(optionNumberPadding) << i + 1 << ":" <<
-                right << setw(optionLabelPadding) << options[i] << endl;
+                left << setw(optionLabelPadding) << options[i] << endl;
         }
     }
 };
