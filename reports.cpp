@@ -60,39 +60,39 @@ void reports() {
 
         switch (choice) {
             case '1':
-            pressEnterToContinue();
-            repListing();
+                pressEnterToContinue();
+                repListing();
             break;
             case '2':
-            pressEnterToContinue();
-            repWholesale();
+                pressEnterToContinue();
+                repWholesale();
             break;
             case '3':
-            pressEnterToContinue();
-            repRetail();
+                pressEnterToContinue();
+                repRetail();
             break;
             case '4':
-            pressEnterToContinue();
-            repQty();
+                pressEnterToContinue();
+                repQty();
             break;
             case '5':
-            pressEnterToContinue();
-            repCost();
+                pressEnterToContinue();
+                repCost();
             break;
             case '6':
-            pressEnterToContinue();
-            repAge();
+                pressEnterToContinue();
+                repAge();
             break;
             case '7':
-            pressEnterToContinue();
-            loopShouldEnd = true; // End loop
-            return;
+                pressEnterToContinue();
+                loopShouldEnd = true; // End loop
+                return;
             break;
             default:
-            // Choice is invalid
-            // Set choice to invalid so that loops runs again
-            cout << endl << "Invalid input, please try again" << endl;
-            pressEnterToContinue();
+                // Choice is invalid
+                // Set choice to invalid so that loops runs again
+                cout << endl << "Invalid input, please try again" << endl;
+                pressEnterToContinue();
             break;
         }
 

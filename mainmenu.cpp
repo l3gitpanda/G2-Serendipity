@@ -48,27 +48,27 @@ int main() {
 
         switch (choice) {
             case '1':
-            pressEnterToContinue();
-            // cashier()
+                pressEnterToContinue();
+                // cashier()
             break;
             case '2':
-            pressEnterToContinue();
-            // invmenu()
+                pressEnterToContinue();
+                // invmenu()
             break;
             case '3':
-            pressEnterToContinue();
-            reports();
+                pressEnterToContinue();
+                reports();
             break;
             case '4':
-            pressEnterToContinue();
-            loopShouldEnd = true; // end loop
-            return 0;
+                pressEnterToContinue();
+                loopShouldEnd = true; // end loop
+                return 0;
             break;
             default:
-            // Choice is invalid
-            // Set choice to invalid so that loops runs again
-            cout << endl << "Invalid input, please try again" << endl;
-            pressEnterToContinue();
+                // Choice is invalid
+                // Set choice to invalid so that loops runs again
+                cout << endl << "Invalid input, please try again" << endl;
+                pressEnterToContinue();
             break;
         }
 
