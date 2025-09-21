@@ -10,6 +10,6 @@ CS1B – G2: Serendipity
 #ifndef UTILS_H
 #define UTILS_H
 
-
+void clearScreen();
 
 #endif // UTILS_H
