@@ -47,28 +47,28 @@ void reports() {
 
         switch (choice) {
             case '1':
-                pressEnterToContinue();
                 repListing();
+                pressEnterToContinue();
             break;
             case '2':
-                pressEnterToContinue();
                 repWholesale();
+                pressEnterToContinue();
             break;
             case '3':
-                pressEnterToContinue();
                 repRetail();
+                pressEnterToContinue();
             break;
             case '4':
-                pressEnterToContinue();
                 repQty();
+                pressEnterToContinue();
             break;
             case '5':
-                pressEnterToContinue();
                 repCost();
+                pressEnterToContinue();
             break;
             case '6':
-                pressEnterToContinue();
                 repAge();
+                pressEnterToContinue();
             break;
             case '7':
                 pressEnterToContinue();
