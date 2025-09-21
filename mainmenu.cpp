@@ -11,6 +11,7 @@ CS1B – G2: Serendipity
 #include <iomanip>
 #include "utils.h"
 #include "reports.h"
+#include "invmenu.h"
 
 using namespace std;
 
@@ -49,7 +50,7 @@ int main() {
             break;
             case '2':
                 pressEnterToContinue();
-                // invmenu()
+                invMenu();
             break;
             case '3':
                 pressEnterToContinue();
