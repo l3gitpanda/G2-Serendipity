@@ -14,5 +14,5 @@ using namespace std;
 
 void clearScreen() {
     // Clear the screen
-    cout << "\033[H\033[2j" << endl;
+    cout << "\033[2J\033[1;1H" << endl;
 }
