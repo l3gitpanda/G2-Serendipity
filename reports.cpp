@@ -15,33 +15,20 @@ CS1B – G2: Serendipity
 using namespace std;
 
 void printReportsMenu() {
-    int optionNumberPadding = 12;
-    /*
-    Distance between option number containers and
-    there corresponding label
-    */
-    int optionLabelPadding = 10;
-    /*
-    Distance between option label containers and 
-    their corresponding label number
-    */
+    navigationMenu reportsMenu(
+        "Reports Menu", 
+        {
+            "Inventory Listing",
+            "Inventory Wholesale Value",
+            "Inventory Retail Value"
+            "Listing by Quantity",
+            "Listing by Cost",
+            "Listing by Age",
+            "Return to Main Menu"
+        }
+    ); // Initialize menu
 
-    cout << right << setw(40) << "SERENDIPITY" << endl << 
-        right << setw(optionNumberPadding) << "1:" << 
-        right << setw(optionLabelPadding) << "Inventory Listing" << endl <<
-        right << setw(optionNumberPadding) << "2:" << 
-        right << setw(optionLabelPadding) << "Inventory Wholesale Value" << endl <<
-        right << setw(optionNumberPadding) << "3:" << 
-        right << setw(optionLabelPadding) << "Inventory Retail Value" << endl <<
-        right << setw(optionNumberPadding) << "4:" << 
-        right << setw(optionLabelPadding) << "Listing by Quantity" << endl <<
-        right << setw(optionNumberPadding) << "5:" << 
-        right << setw(optionLabelPadding) << "Listing by Cost" << endl <<
-        right << setw(optionNumberPadding) << "6:" << 
-        right << setw(optionLabelPadding) << "Listing by Age" << endl <<
-        right << setw(optionNumberPadding) << "7:" << 
-        right << setw(optionLabelPadding) << "Return to Main Menu" << endl;
-        
+    reportsMenu.print(); // Print menu
 }
 
 void reports() {
