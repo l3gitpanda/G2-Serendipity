@@ -21,16 +21,16 @@ void pressEnterToContinue();
 struct navigationMenu { // Use struct for reusability
     string heading;
     vector<string> options;
-    void print() {
-        int optionNumberPadding = 12;
+    void print(int optionNumberPadding, int optionLabelPadding) {
         /*
-        Distance between option number containers and
-        there corresponding label
+        optionNumberPadding:
+            Distance between option number containers and
+            there corresponding label
         */
-        int optionLabelPadding = 10;
         /*
-        Distance between option label containers and 
-        their corresponding label number
+        optionLabelPadding:
+            Distance between option label containers and 
+            their corresponding label number
         */
 
         cout << right << setw(40) << "SERENDIPITY" << endl << 
