@@ -8,5 +8,16 @@ CS1B – G2: Serendipity
 */
 #ifndef BOOK_H
 #define BOOK_H
+#include <iostream>
+
+using namespace std;
+
+struct book {
+    string date;
+    unsigned int quantity; // Must be positive
+    string ISBN;
+    string title;
+    float price;
+};
 
 #endif // BOOK_H
