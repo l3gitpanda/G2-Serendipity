@@ -32,13 +32,14 @@ void printMainMenu() {
 }
 
 int main() {
+    bool choiceIsValid = true;
+
     do {
         clearScreen(); // Clear the screen before printing options
 
         printMainMenu();
-        
+
         char choice;
-        bool choiceIsValid = true;
 
         cout << "Choose and option: ";
 
