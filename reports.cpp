@@ -10,7 +10,7 @@ CS1B – G2: Serendipity
 #include <iostream>
 #include "reports.h"
 #include <iomanip>
-#include "utils.h";
+#include "utils.h"
 
 using namespace std;
 
