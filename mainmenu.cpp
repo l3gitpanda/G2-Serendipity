@@ -10,6 +10,7 @@ CS1B – G2: Serendipity
 #include <iostream>
 #include <iomanip>
 #include "utils.h"
+#include "reports.h"
 
 using namespace std;
 
@@ -56,7 +57,7 @@ int main() {
             break;
             case '3':
             pressEnterToContinue();
-            // reports()
+            reports();
             break;
             case '4':
             pressEnterToContinue();
