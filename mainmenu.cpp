@@ -6,3 +6,20 @@ CS1B – G2: Serendipity
   Purpose: Menu based inventory manager
   Build:   g++ -std=c++20 -Werror mainmenu.cpp utils.cpp invmenu.cpp reports.cpp cashier.cpp -o serendipity.out
 */
+
+#include <iostream>
+#include <iomanip>
+
+using namespace std;
+
+void printMainMenu() {
+    cout << right << setw(40) << "SERENDIPITY" << endl << 
+        right << setw(12) << "1:" << 
+        right << setw(50) << "Option 1" << endl <<
+        right << setw(12) << "2:" << 
+        right << setw(50) << "Option 1" << endl <<
+        right << setw(12) << "3:" << 
+        right << setw(50) << "Option 1" << endl <<
+        right << setw(12) << "4:" << 
+        right << setw(50) << "Option 1" << endl;
+}
