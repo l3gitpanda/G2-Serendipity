@@ -28,7 +28,7 @@ void printReportsMenu() {
         }
     ); // Initialize menu
 
-    reportsMenu.print(); // Print menu
+    reportsMenu.print(12, 10); // Print menu
 }
 
 void reports() {
