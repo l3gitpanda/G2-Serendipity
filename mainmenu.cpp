@@ -33,7 +33,6 @@ void printMainMenu() {
 }
 
 int main() {
-    bool choiceIsValid = true;
     bool loopShouldEnd = false;
 
     do {
@@ -66,14 +65,14 @@ int main() {
             return 0;
             break;
             default:
-            choiceIsValid = false; 
+            // Choice is invalid
             // Set choice to invalid so that loops runs again
             cout << endl << "Invalid input, please try again" << endl;
             pressEnterToContinue();
             break;
         }
 
-    } while (!choiceIsValid || !loopShouldEnd);
+    } while (!loopShouldEnd);
     /*
         One option is to use choice to determine whether the loop should end
         and that would save memory, but using a variable instead increases
