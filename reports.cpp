@@ -28,19 +28,19 @@ void printReportsMenu() {
 
     cout << right << setw(40) << "SERENDIPITY" << endl << 
         right << setw(optionNumberPadding) << "1:" << 
-        right << setw(optionLabelPadding) << "View Listing" << endl <<
+        right << setw(optionLabelPadding) << "Inventory Listing" << endl <<
         right << setw(optionNumberPadding) << "2:" << 
-        right << setw(optionLabelPadding) << "View Wholesale" << endl <<
+        right << setw(optionLabelPadding) << "Inventory Wholesale Value" << endl <<
         right << setw(optionNumberPadding) << "3:" << 
-        right << setw(optionLabelPadding) << "View Retail" << endl <<
+        right << setw(optionLabelPadding) << "Inventory Retail Value" << endl <<
         right << setw(optionNumberPadding) << "4:" << 
-        right << setw(optionLabelPadding) << "View quantity" << endl <<
+        right << setw(optionLabelPadding) << "Listing by Quantity" << endl <<
         right << setw(optionNumberPadding) << "5:" << 
-        right << setw(optionLabelPadding) << "View Cost" << endl <<
+        right << setw(optionLabelPadding) << "Listing by Cost" << endl <<
         right << setw(optionNumberPadding) << "6:" << 
-        right << setw(optionLabelPadding) << "View Age" << endl <<
+        right << setw(optionLabelPadding) << "Listing by Age" << endl <<
         right << setw(optionNumberPadding) << "7:" << 
-        right << setw(optionLabelPadding) << "Go back to main menu" << endl;
+        right << setw(optionLabelPadding) << "Return to Main Menu" << endl;
         
 }
 
