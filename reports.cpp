@@ -10,6 +10,7 @@ CS1B – G2: Serendipity
 #include <iostream>
 #include "reports.h"
 #include <iomanip>
+#include "utils.h";
 
 using namespace std;
 
@@ -44,7 +45,57 @@ void printReportsMenu() {
 }
 
 void reports() {
+    bool choiceIsValid = true;
 
+    do {
+        clearScreen(); // Clear the screen before printing options
+
+        printReportsMenu();
+
+        char choice;
+
+        cout << "Choose an option: ";
+
+        cin.get(choice); // Ensure choice is a char
+
+        switch (choice) {
+            case '1':
+            pressEnterToContinue();
+            repListing();
+            break;
+            case '2':
+            pressEnterToContinue();
+            repWholesale();
+            break;
+            case '3':
+            pressEnterToContinue();
+            repRetail();
+            break;
+            case '4':
+            pressEnterToContinue();
+            repQty();
+            break;
+            case '5':
+            pressEnterToContinue();
+            repCost();
+            break;
+            case '6':
+            pressEnterToContinue();
+            repAge();
+            break;
+            case '7':
+            pressEnterToContinue();
+            return;
+            break;
+            default:
+            choiceIsValid = false; 
+            // Set choice to invalid so that loops runs again
+            cout << endl << "Invalid input, please try again" << endl;
+            pressEnterToContinue();
+            break;
+        }
+
+    } while (!choiceIsValid);
 }
 
 void repListing() {
