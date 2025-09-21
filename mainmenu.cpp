@@ -22,13 +22,13 @@ void printMainMenu() {
 
     cout << right << setw(40) << "SERENDIPITY" << endl << 
         right << setw(12) << "1:" << 
-        right << setw(optionLabelPadding) << "Option 1" << endl <<
+        right << setw(optionLabelPadding) << "Cashier Module" << endl <<
         right << setw(12) << "2:" << 
-        right << setw(optionLabelPadding) << "Option 1" << endl <<
+        right << setw(optionLabelPadding) << "Inventory Database Module" << endl <<
         right << setw(12) << "3:" << 
-        right << setw(optionLabelPadding) << "Option 1" << endl <<
+        right << setw(optionLabelPadding) << "Report Module" << endl <<
         right << setw(12) << "4:" << 
-        right << setw(optionLabelPadding) << "Option 1" << endl;
+        right << setw(optionLabelPadding) << "Exit" << endl;
 }
 
 int main() {
