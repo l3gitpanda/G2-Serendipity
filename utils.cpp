@@ -12,7 +12,7 @@ CS1B – G2: Serendipity
 
 using namespace std;
 
-void clearScrean() {
+void clearScreen() {
     // Clear the screen
     cout << "\033[H\033[2j" << endl;
 }
