@@ -45,7 +45,7 @@ void printReportsMenu() {
 }
 
 void reports() {
-    bool choiceIsValid = true;
+    bool loopShouldEnd = false;
 
     do {
         clearScreen(); // Clear the screen before printing options
@@ -85,17 +85,18 @@ void reports() {
             break;
             case '7':
             pressEnterToContinue();
+            loopShouldEnd = true; // End loop
             return;
             break;
             default:
-            choiceIsValid = false; 
+            // Choice is invalid
             // Set choice to invalid so that loops runs again
             cout << endl << "Invalid input, please try again" << endl;
             pressEnterToContinue();
             break;
         }
 
-    } while (!choiceIsValid);
+    } while (!loopShouldEnd);
 }
 
 void repListing() {
