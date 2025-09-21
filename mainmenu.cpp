@@ -61,6 +61,7 @@ int main() {
             default:
             choiceIsValid = false; 
             // Set choice to invalid so that loops runs again
+            cout << endl << "Invalid input, please try again" << endl;
             break;
         }
 
