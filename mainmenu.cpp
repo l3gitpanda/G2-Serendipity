@@ -34,6 +34,7 @@ void printMainMenu() {
 
 int main() {
     bool choiceIsValid = true;
+    bool loopShouldEnd = false;
 
     do {
         clearScreen(); // Clear the screen before printing options
@@ -61,6 +62,7 @@ int main() {
             break;
             case '4':
             pressEnterToContinue();
+            loopShouldEnd = true; // end loop
             return 0;
             break;
             default:
@@ -71,5 +73,10 @@ int main() {
             break;
         }
 
-    } while (!choiceIsValid);
+    } while (!choiceIsValid || !loopShouldEnd);
+    /*
+        One option is to use choice to determine whether the loop should end
+        and that would save memory, but using a variable instead increases
+        readability
+    */
 }
