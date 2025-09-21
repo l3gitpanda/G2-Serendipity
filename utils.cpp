@@ -19,7 +19,7 @@ void clearScreen() {
 }
 
 void pressEnterToContinue() {
-    cout << "Press any key to continue..." << flush;
+    cout << "Press enter to continue..." << flush;
     cin.ignore(numeric_limits<std::streamsize>::max(), '\n');
     cin.get();
     // Ignore next input
