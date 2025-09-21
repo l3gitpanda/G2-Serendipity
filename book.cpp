@@ -14,3 +14,7 @@ using namespace std;
 bool validateDateInput() {
     return true;
 }
+
+string sanitizeDateInput(string date) {
+    return date;
+}

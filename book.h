@@ -22,4 +22,6 @@ struct book {
 
 bool validateDateInput();
 
+string sanitizeDateInput(string date);
+
 #endif // BOOK_H
