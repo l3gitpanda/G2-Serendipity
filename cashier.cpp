@@ -15,6 +15,17 @@ CS1B – G2: Serendipity
 #include "utils.h"
 using namespace std;
 
+static bool readNonEmptyLine(const char* prompt, string& out)
+{
+    cout << prompt;
+    getline(cin >> ws, out);
+    if (out.empty()) {
+        cout << "Please enter a value.\n";
+        return false;
+    }
+    return true;
+}
+
 void cashier()
 {
     clearScreen();
@@ -22,26 +33,41 @@ void cashier()
     cout << "Serendipity Booksellers\n\n";
     cout << "Cashier Module\n\n";
 
-
     string date, isbn, title;
     int qty = 0;
     double unit = 0.0;
 
-    cout << "Date: ";
-	getline(cin >> ws, date);
+    // Date
+    while (!readNonEmptyLine("Date: ", date)) {}
 
+    // Quantity (positive integer)
+    for (;;)
+    {
+        cout << "Quantity: ";
+        if (cin >> qty && qty > 0) break;
+        cout << "Enter a positive whole number.\n";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
 
-    cout << "Quantity: ";
-    cin >> qty;
+    // ISBN (non-empty)
+    while (!readNonEmptyLine("ISBN: ", isbn)) {}
 
-    cout << "ISBN: ";
-    cin >> isbn;
+    // Title (non-empty)
+    while (!readNonEmptyLine("Title: ", title)) {}
 
-    cout << "Title: ";
-    getline(cin >> ws, title);
-
-    cout << "Unit Price: ";
-    cin >> unit;
+    // Unit Price (non-negative)
+    for (;;)
+    {
+        cout << "Unit Price: ";
+        if (cin >> unit && unit >= 0.0) {
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // clear trailing newline for pause
+            break;
+        }
+        cout << "Enter a non-negative number.\n";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
 
     const double TAX_RATE = 0.06;
     double subtotal = qty * unit;
@@ -56,7 +82,7 @@ void cashier()
     cout << left  << setw(12) << "Title:"  << title << '\n';
 
     cout << fixed << setprecision(2);
-    cout << left  << setw(12) << "Price:"    << "$ " << setw(0) << unit     << '\n';
+    cout << left  << setw(12) << "Price:"    << "$ " << unit     << '\n';
     cout << left  << setw(12) << "Subtotal:" << "$ " << subtotal << '\n';
     cout << left  << setw(12) << "Tax (6%):" << "$ " << tax      << '\n';
     cout << left  << setw(12) << "Total:"    << "$ " << total    << '\n';
