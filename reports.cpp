@@ -8,105 +8,87 @@ CS1B – G2: Serendipity
 */
 
 #include <iostream>
+#include <string>
 #include "reports.h"
-#include <iomanip>
 #include "utils.h"
-
 using namespace std;
 
-void printReportsMenu() {
-    navigationMenu reportsMenu(
-        "Reports Menu", 
-        {
-            "Inventory Listing",
-            "Inventory Wholesale Value",
-            "Inventory Retail Value",
-            "Listing by Quantity",
-            "Listing by Cost",
-            "Listing by Age",
-            "Return to Main Menu"
-        }
-    ); // Initialize menu
-
-    reportsMenu.print(12, 5); // Print menu
+static void printReportsMenu()
+{
+    cout << "Serendipity Booksellers\n\n";
+    cout << "Reports\n\n";
+    cout << "1. Inventory Listing\n";
+    cout << "2. Inventory Wholesale Value\n";
+    cout << "3. Inventory Retail Value\n";
+    cout << "4. Listing by Quantity\n";
+    cout << "5. Listing by Cost\n";
+    cout << "6. Listing by Age\n";
+    cout << "7. Return to the Main Menu\n\n";
+    cout << "Enter Your Choice: ";
 }
 
-void reports() {
-    bool loopShouldEnd = false;
+void reports()
+{
+    bool running = true;
 
-    do {
-        clearScreen(); // Clear the screen before printing options
-
+    while (running)
+    {
+        clearScreen();
         printReportsMenu();
 
-        char choice;
+        string input;
+        getline(cin, input);
 
-        cout << "Choose an option: ";
-
-        cin.get(choice); // Ensure choice is a char
-
-        switch (choice) {
-            case '1':
-                repListing();
-                pressEnterToContinue();
-            break;
-            case '2':
-                repWholesale();
-                pressEnterToContinue();
-            break;
-            case '3':
-                repRetail();
-                pressEnterToContinue();
-            break;
-            case '4':
-                repQty();
-                pressEnterToContinue();
-            break;
-            case '5':
-                repCost();
-                pressEnterToContinue();
-            break;
-            case '6':
-                repAge();
-                pressEnterToContinue();
-            break;
-            case '7':
-                pressEnterToContinue();
-                loopShouldEnd = true; // End loop
-                return;
-            break;
-            default:
-                // Choice is invalid
-                // Set choice to invalid so that loops runs again
-                cout << endl << "Invalid input, please try again" << endl;
-                pressEnterToContinue();
-            break;
+        if (input.size() != 1 || input[0] < '1' || input[0] > '7')
+        {
+            cout << "\nPlease enter a number in the range 1 - 7.\n";
+            pressEnterToContinue();
+            continue;
         }
 
-    } while (!loopShouldEnd);
+        switch (input[0])
+        {
+            case '1':
+                clearScreen();
+                repListing();
+                pressEnterToContinue();
+                break;
+            case '2':
+                clearScreen();
+                repWholesale();
+                pressEnterToContinue();
+                break;
+            case '3':
+                clearScreen();
+                repRetail();
+                pressEnterToContinue();
+                break;
+            case '4':
+                clearScreen();
+                repQty();
+                pressEnterToContinue();
+                break;
+            case '5':
+                clearScreen();
+                repCost();
+                pressEnterToContinue();
+                break;
+            case '6':
+                clearScreen();
+                repAge();
+                pressEnterToContinue();
+                break;
+            case '7':
+                running = false;
+                break;
+        }
+    }
 }
 
-void repListing() {
-    cout << "You've chosen a listing";
-}
-
-void repWholesale() {
-    cout << "You've chosen Wholesale";
-}
-
-void repRetail() {
-    cout << "You've chosen Retail";
-}
-
-void repQty() {
-    cout << "You've chosen Quantity";
-}
-
-void repCost() {
-    cout << "You've chosen a Cost";
-}
-
-void repAge() {
-    cout << "You've chosen Age";
-}
-
+// ----- Report stubs -----
+void repListing()   { cout << "Inventory Listing selected.\n"; }
+void repWholesale() { cout << "Inventory Wholesale Value selected.\n"; }
+void repRetail()    { cout << "Inventory Retail Value selected.\n"; }
+void repQty()       { cout << "Listing by Quantity selected.\n"; }
+void repCost()      { cout << "Listing by Cost selected.\n"; }
+void repAge()       { cout << "Listing by Age selected.\n"; }

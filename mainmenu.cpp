@@ -12,6 +12,7 @@ CS1B – G2: Serendipity
 #include "utils.h"
 #include "reports.h"
 #include "invmenu.h"
+#include "cashier.h"
 
 using namespace std;
 
@@ -46,7 +47,7 @@ int main() {
         switch (choice) {
             case '1':
                 pressEnterToContinue();
-                // cashier()
+                cashier();
             break;
             case '2':
                 pressEnterToContinue();

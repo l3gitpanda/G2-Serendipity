@@ -10,4 +10,6 @@ CS1B – G2: Serendipity
 #ifndef CASHIER_H
 #define CASHIER_H
 
-#endif // CASHIER_H
+void cashier();
+
+#endif
