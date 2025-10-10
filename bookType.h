@@ -18,6 +18,9 @@ class bookType {
     string ISBN;
     string title;
     float price;
+    
+
+    static size_t totalBookCount;
 
     
     
