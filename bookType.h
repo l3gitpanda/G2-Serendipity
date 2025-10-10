@@ -12,16 +12,21 @@ CS1B – G2: Serendipity
 
 using namespace std;
 
-struct bookType {
+class bookType {
     string date;
     unsigned int quantity; // Must be positive
     string ISBN;
     string title;
     float price;
+
+    
+    
+    public:
+    
+    static bool validateDateInput(string date);
+    static string sanitizeDateInput(string date);
 };
 
-bool validateDateInput(string date);
 
-string sanitizeDateInput(string date);
 
 #endif // BOOKTYPE_H

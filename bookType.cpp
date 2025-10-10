@@ -11,10 +11,10 @@ CS1B – G2: Serendipity
 
 using namespace std;
 
-bool validateDateInput(string date) {
+bool bookType::validateDateInput(string date) {
     return true;
 }
 
-string sanitizeDateInput(string date) {
+string bookType::sanitizeDateInput(string date) {
     return date;
 }
