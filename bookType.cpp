@@ -7,7 +7,7 @@ CS1B – G2: Serendipity
   Build:   g++ -std=c++20 -Werror mainmenu.cpp utils.cpp invmenu.cpp reports.cpp book.cpp cashier.cpp -o serendipity.out
 */
 #include <iostream>
-#include "book.h"
+#include "bookType.h"
 
 using namespace std;
 

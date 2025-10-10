@@ -6,13 +6,13 @@ CS1B – G2: Serendipity
   Purpose: Menu based inventory manager
   Build:   g++ -std=c++20 -Werror mainmenu.cpp utils.cpp invmenu.cpp reports.cpp book.cpp cashier.cpp -o serendipity.out
 */
-#ifndef BOOK_H
-#define BOOK_H
+#ifndef BOOKTYPE_H
+#define BOOKTYPE_H
 #include <iostream>
 
 using namespace std;
 
-struct book {
+struct bookType {
     string date;
     unsigned int quantity; // Must be positive
     string ISBN;
@@ -24,4 +24,4 @@ bool validateDateInput(string date);
 
 string sanitizeDateInput(string date);
 
-#endif // BOOK_H
+#endif // BOOKTYPE_H
