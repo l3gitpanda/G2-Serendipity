@@ -9,9 +9,225 @@ CS1B – G2: Serendipity
 
 #include <iostream>
 #include <string>
+#include <vector>
+#include <limits>
+#include <sstream>
+#include <cctype>
 #include "invmenu.h"
 #include "utils.h"
 using namespace std;
+
+namespace
+{
+  struct BookRecord
+  {
+    string bookTitle;
+    string isbn;
+    string author;
+    string publisher;
+    string dateAdded;
+    int qtyOnHand{};
+    double wholesale{};
+    double retail{};
+  };
+
+  static vector<BookRecord> inventory;
+  constexpr size_t kMaxInventory = 20;
+
+  string trim(const string &value)
+  {
+    size_t start = 0;
+    while (start < value.size() && isspace(static_cast<unsigned char>(value[start])))
+    {
+      ++start;
+    }
+
+    if (start == value.size())
+    {
+      return "";
+    }
+
+    size_t end = value.size();
+    while (end > start && isspace(static_cast<unsigned char>(value[end - 1])))
+    {
+      --end;
+    }
+
+    return value.substr(start, end - start);
+  }
+
+  bool parseNonNegativeInt(const string &text, int &value)
+  {
+    long long result = 0;
+    for (char ch : text)
+    {
+      if (!isdigit(static_cast<unsigned char>(ch)))
+      {
+        return false;
+      }
+
+      result = result * 10 + (ch - '0');
+
+      if (result > numeric_limits<int>::max())
+      {
+        return false;
+      }
+    }
+
+    value = static_cast<int>(result);
+    return true;
+  }
+
+  bool parseNonNegativeDouble(const string &text, double &value)
+  {
+    istringstream iss(text);
+    double parsed = 0.0;
+    iss >> parsed;
+
+    if (!iss || parsed < 0.0)
+    {
+      return false;
+    }
+
+    char leftover;
+    if (iss >> leftover)
+    {
+      return false;
+    }
+
+    value = parsed;
+    return true;
+  }
+
+  bool promptStringField(const string &label, string &out)
+  {
+    while (true)
+    {
+      cout << label << ": ";
+      string input;
+      getline(cin, input);
+
+      if (input.empty())
+      {
+        cout << "Add book cancelled.\n";
+        return false;
+      }
+
+      string trimmed = trim(input);
+      if (trimmed.empty())
+      {
+        cout << label << " cannot be blank.\n";
+        continue;
+      }
+
+      out = trimmed;
+      return true;
+    }
+  }
+
+  bool promptNonNegativeIntField(const string &label, int &out)
+  {
+    while (true)
+    {
+      cout << label << ": ";
+      string input;
+      getline(cin, input);
+
+      if (input.empty())
+      {
+        cout << "Add book cancelled.\n";
+        return false;
+      }
+
+      string trimmed = trim(input);
+      if (trimmed.empty())
+      {
+        cout << "Please enter a non-negative integer for " << label << ".\n";
+        continue;
+      }
+
+      int value = 0;
+      if (!parseNonNegativeInt(trimmed, value))
+      {
+        cout << "Please enter a non-negative integer for " << label << ".\n";
+        continue;
+      }
+
+      out = value;
+      return true;
+    }
+  }
+
+  bool promptNonNegativeDoubleField(const string &label, double &out)
+  {
+    while (true)
+    {
+      cout << label << ": ";
+      string input;
+      getline(cin, input);
+
+      if (input.empty())
+      {
+        cout << "Add book cancelled.\n";
+        return false;
+      }
+
+      string trimmed = trim(input);
+      if (trimmed.empty())
+      {
+        cout << "Please enter a non-negative number for " << label << ".\n";
+        continue;
+      }
+
+      double value = 0.0;
+      if (!parseNonNegativeDouble(trimmed, value))
+      {
+        cout << "Please enter a non-negative number for " << label << ".\n";
+        continue;
+      }
+
+      out = value;
+      return true;
+    }
+  }
+
+  bool confirmSave()
+  {
+    while (true)
+    {
+      cout << "Save this record? (Y/N): ";
+      string input;
+      getline(cin, input);
+
+      if (input.empty())
+      {
+        cout << "Add book cancelled.\n";
+        return false;
+      }
+
+      string trimmed = trim(input);
+      if (trimmed.empty())
+      {
+        cout << "Please enter Y or N.\n";
+        continue;
+      }
+
+      char response = static_cast<char>(tolower(static_cast<unsigned char>(trimmed[0])));
+      if (response == 'y')
+      {
+        return true;
+      }
+
+      if (response == 'n')
+      {
+        cout << "Add book cancelled.\n";
+        return false;
+      }
+
+      cout << "Please enter Y or N.\n";
+    }
+  }
+} // namespace
 
 static void printInvMenu()
 {
@@ -75,6 +291,77 @@ void invMenu()
 
 // Inventory stubs (navigation-only)
 void lookUpBook()  { cout << "You selected Look Up Book.\n"; }
-void addBook()     { cout << "You selected Add Book.\n"; }
+void addBook()
+{
+  if (inventory.size() >= kMaxInventory)
+  {
+    cout << "Inventory full (20/20). Cannot add more books.\n";
+    return;
+  }
+
+  cout << "Add a Book to Inventory\n";
+  cout << "-----------------------\n";
+
+  BookRecord record;
+
+  if (!promptStringField("Book Title", record.bookTitle))
+  {
+    return;
+  }
+
+  if (!promptStringField("ISBN", record.isbn))
+  {
+    return;
+  }
+
+  if (!promptStringField("Author", record.author))
+  {
+    return;
+  }
+
+  if (!promptStringField("Publisher", record.publisher))
+  {
+    return;
+  }
+
+  if (!promptStringField("Date Added", record.dateAdded))
+  {
+    return;
+  }
+
+  if (!promptNonNegativeIntField("Quantity on Hand", record.qtyOnHand))
+  {
+    return;
+  }
+
+  if (!promptNonNegativeDoubleField("Wholesale Cost", record.wholesale))
+  {
+    return;
+  }
+
+  if (!promptNonNegativeDoubleField("Retail Price", record.retail))
+  {
+    return;
+  }
+
+  if (record.retail < record.wholesale)
+  {
+    cout << "Warning: Retail price is less than wholesale cost.\n";
+  }
+
+  if (!confirmSave())
+  {
+    return;
+  }
+
+  inventory.push_back(record);
+
+  cout << "\nBook added successfully.\n";
+  cout << "Inventory count: " << inventory.size() << '/' << kMaxInventory << ".\n";
+  if (inventory.size() == kMaxInventory)
+  {
+    cout << "Inventory now full (20/20).\n";
+  }
+}
 void editBook()    { cout << "You selected Edit Book.\n"; }
 void deleteBook()  { cout << "You selected Delete Book.\n"; }
