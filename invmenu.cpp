@@ -189,15 +189,17 @@ void lookUpBook()  {
         break;
     }
 
-    const vector<string> bookTitles;
+    const vector<string> bookNavigationOptions;
 
     for (const auto &book : searchResults) {
-      bookTitles.push_back(book.getBookTitle());
+      bookNavigationOptions.push_back(book.getBookTitle());
     } // Get titles of books for menu
 
+    bookNavigationOptions.push_back("Return to Search Menu");
+    
     navigationMenu resultsMenu(
       "Search Results",
-      bookTitles
+      bookNavigationOptions
     );
 
     resultsMenu.print(12, 5);
