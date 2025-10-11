@@ -15,23 +15,12 @@ CS1B – G2: Serendipity
 #include <cctype>
 #include "invmenu.h"
 #include "utils.h"
+#include "bookType.h"
 using namespace std;
 
 namespace
 {
-  struct BookRecord
-  {
-    string bookTitle;
-    string isbn;
-    string author;
-    string publisher;
-    string dateAdded;
-    int qtyOnHand{};
-    double wholesale{};
-    double retail{};
-  };
-
-  static vector<BookRecord> inventory;
+  static vector<BookType> inventory;
   constexpr size_t kMaxInventory = 20;
 
   string trim(const string &value)
@@ -302,66 +291,51 @@ void addBook()
   cout << "Add a Book to Inventory\n";
   cout << "-----------------------\n";
 
-  BookRecord record;
+  BookType record;
 
-  if (!promptStringField("Book Title", record.bookTitle))
-  {
+  string bookTitle, isbn, author, publisher, dateAdded;
+  int qtyOnHand;
+  double wholesale, retail;
+
+  if (!promptStringField("Book Title", bookTitle))
     return;
-  }
-
-  if (!promptStringField("ISBN", record.isbn))
-  {
+  if (!promptStringField("ISBN", isbn))
     return;
-  }
-
-  if (!promptStringField("Author", record.author))
-  {
+  if (!promptStringField("Author", author))
     return;
-  }
-
-  if (!promptStringField("Publisher", record.publisher))
-  {
+  if (!promptStringField("Publisher", publisher))
     return;
-  }
-
-  if (!promptStringField("Date Added", record.dateAdded))
-  {
+  if (!promptStringField("Date Added", dateAdded))
     return;
-  }
-
-  if (!promptNonNegativeIntField("Quantity on Hand", record.qtyOnHand))
-  {
+  if (!promptNonNegativeIntField("Quantity on Hand", qtyOnHand))
     return;
-  }
-
-  if (!promptNonNegativeDoubleField("Wholesale Cost", record.wholesale))
-  {
+  if (!promptNonNegativeDoubleField("Wholesale Cost", wholesale))
     return;
-  }
-
-  if (!promptNonNegativeDoubleField("Retail Price", record.retail))
-  {
+  if (!promptNonNegativeDoubleField("Retail Price", retail))
     return;
-  }
 
-  if (record.retail < record.wholesale)
-  {
+  if (retail < wholesale)
     cout << "Warning: Retail price is less than wholesale cost.\n";
-  }
 
   if (!confirmSave())
-  {
     return;
-  }
+
+  BookType record;
+  record.setBookTitle(bookTitle);
+  record.setIsbn(isbn);
+  record.setAuthor(author);
+  record.setPublisher(publisher);
+  record.setDateAdded(dateAdded);
+  record.setQtyOnHand(qtyOnHand);
+  record.setWholesale(wholesale);
+  record.setRetail(retail);
 
   inventory.push_back(record);
 
   cout << "\nBook added successfully.\n";
   cout << "Inventory count: " << inventory.size() << '/' << kMaxInventory << ".\n";
   if (inventory.size() == kMaxInventory)
-  {
     cout << "Inventory now full (20/20).\n";
-  }
 }
 void editBook()    { cout << "You selected Edit Book.\n"; }
 void deleteBook()  { cout << "You selected Delete Book.\n"; }

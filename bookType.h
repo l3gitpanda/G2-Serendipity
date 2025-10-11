@@ -9,27 +9,45 @@ CS1B – G2: Serendipity
 #ifndef BOOKTYPE_H
 #define BOOKTYPE_H
 #include <iostream>
+#include <string>
 
 using namespace std;
 
-class bookType {
-    string date;
-    unsigned int quantity; // Must be positive
-    string ISBN;
-    string title;
-    float price;
-    
+class BookType {
+  public:
+    BookType();
+    BookType(const string &bookTitle, const string &isbn, const string &author, const string &publisher,
+        const string &dateAdded, int qtyOnHand, double wholesale, double retail);
 
-    static size_t totalBookCount;
+    // Getters
+    string getBookTitle() const;
+    string getIsbn() const;
+    string getAuthor() const;
+    string getPublisher() const;
+    string getDateAdded() const;
+    int getQtyOnHand() const;
+    double getWholesale() const;
+    double getRetail() const;
 
-    
-    
-    public:
-    
-    static bool validateDateInput(string date);
-    static string sanitizeDateInput(string date);
+    // Setters
+    void setBookTitle(const string &title);
+    void setIsbn(const string &isbn);
+    void setAuthor(const string &author);
+    void setPublisher(const string &publisher);
+    void setDateAdded(const string &date);
+    void setQtyOnHand(int qty);
+    void setWholesale(double wholesale);
+    void setRetail(double retail);
+
+  private:
+    string bookTitle;
+    string isbn;
+    string author;
+    string publisher;
+    string dateAdded;
+    int qtyOnHand{};
+    double wholesale{};
+    double retail{};
 };
-
-
 
 #endif // BOOKTYPE_H
