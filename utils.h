@@ -44,4 +44,14 @@ struct navigationMenu { // Use struct for reusability
     }
 };
 
+#include <string>
+
+// Utility functions moved from invmenu.cpp
+std::string trim(const std::string &value);
+bool parseNonNegativeInt(const std::string &text, int &value);
+bool parseNonNegativeDouble(const std::string &text, double &value);
+bool promptStringField(const std::string &label, std::string &out);
+bool promptNonNegativeIntField(const std::string &label, int &out);
+bool promptNonNegativeDoubleField(const std::string &label, double &out);
+
 #endif // UTILS_H
