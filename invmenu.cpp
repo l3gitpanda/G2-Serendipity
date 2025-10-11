@@ -142,6 +142,58 @@ std::vector<BookType> searchForBookByISBN(const string &searchISBN) {
   return results;
 }
 
+void chooseBookFromResults(vector<BookType> &searchResults) {
+  bool loopShouldEnd = false;
+  do {
+    clearScreen(); // Clear the screen before printing options
+        const vector<string> bookNavigationOptions;
+
+    for (const auto &book : searchResults) {
+      bookNavigationOptions.push_back(book.getBookTitle());
+    } // Get titles of books for menu
+
+    bookNavigationOptions.push_back("Return to Search Menu");
+
+    navigationMenu resultsMenu(
+      "Search Results",
+      bookNavigationOptions
+    );
+
+    resultsMenu.print(12, 5);
+
+    if (searchResults.empty()) {
+      cout << "Not in inventory.\n";
+      pressEnterToContinue();
+      loopShouldEnd = true;
+      continue; // Go back to search menu
+    }
+
+    char bookNavigationChoice;
+
+    cin >> bookNavigationChoice;
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    if (bookNavigationChoice < '1' || bookNavigationChoice > static_cast<char>('0' + searchResults.size() + 1)) {
+      cout << "Please enter a valid option.\n";
+      pressEnterToContinue();
+      continue; // Reprint menu
+    }
+    
+    if (bookNavigationChoice == static_cast<char>('0' + searchResults.size() + 1)) {
+      // Return to search menu
+      loopShouldEnd = true;
+      continue;
+    }
+
+    /*
+    bookInfo(searchResults[
+      bookNavigationChoice - 
+      static_cast<int>('1')
+    ]);
+    */ 
+  } while (!loopShouldEnd);
+}
+
 // Inventory stubs (navigation-only)
 void lookUpBook()  { 
   bool loopShouldEnd = false;
@@ -189,26 +241,7 @@ void lookUpBook()  {
         break;
     }
 
-    const vector<string> bookNavigationOptions;
-
-    for (const auto &book : searchResults) {
-      bookNavigationOptions.push_back(book.getBookTitle());
-    } // Get titles of books for menu
-
-    bookNavigationOptions.push_back("Return to Search Menu");
-    
-    navigationMenu resultsMenu(
-      "Search Results",
-      bookNavigationOptions
-    );
-
-    resultsMenu.print(12, 5);
-
-    if (searchResults.empty()) {
-      cout << "Not in inventory.\n";
-      pressEnterToContinue();
-      continue; // Go back to search menu
-    }
+    chooseBookFromResults(searchResults);
 
 
   } while (!loopShouldEnd);
