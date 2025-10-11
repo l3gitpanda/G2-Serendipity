@@ -143,7 +143,48 @@ std::vector<BookType> searchForBookByISBN(const string &searchISBN) {
 }
 
 // Inventory stubs (navigation-only)
-void lookUpBook()  { cout << "You selected Look Up Book.\n"; }
+void lookUpBook()  { 
+  vector<BookType> searchResults;
+  
+  cout << "Look Up a Book.\n"; 
+  cout << "---------------\n";
+
+  navigationMenu searchMenu(
+    "Search Menu",
+    {
+      "Search by Title",
+      "Search by ISBN",
+      "Return to Inventory Menu"
+    }
+  );
+
+  searchMenu.print(12, 5);
+
+  char navigationInput;
+  string searchString;
+
+  cin >> navigationInput;
+  cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+  switch (navigationInput) {
+    case '1':
+      cout << "Enter title to search for: ";
+      getline(cin, searchString);
+      searchResults = searchForBookByTitle(searchString);
+      break;
+    case '2':
+      cout << "Enter ISBN to search for: ";
+      getline(cin, searchString);
+      searchResults = searchForBookByISBN(searchString);
+      break;
+    case '3':
+      cout << "Returning to Inventory Menu.\n";
+      pressEnterToContinue();
+      break;
+  }
+}
+
+
 void addBook()
 {
   if (inventory.size() >= kMaxInventory)
