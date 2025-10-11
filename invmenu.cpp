@@ -144,44 +144,74 @@ std::vector<BookType> searchForBookByISBN(const string &searchISBN) {
 
 // Inventory stubs (navigation-only)
 void lookUpBook()  { 
-  vector<BookType> searchResults;
+  bool loopShouldEnd = false;
+  do {
+    clearScreen(); // Clear the screen before printing options
+
+    vector<BookType> searchResults;
   
-  cout << "Look Up a Book.\n"; 
-  cout << "---------------\n";
+    cout << "Look Up a Book.\n"; 
+    cout << "---------------\n";
 
-  navigationMenu searchMenu(
-    "Search Menu",
-    {
-      "Search by Title",
-      "Search by ISBN",
-      "Return to Inventory Menu"
+    navigationMenu searchMenu(
+      "Search Menu",
+      {
+        "Search by Title",
+        "Search by ISBN",
+        "Return to Inventory Menu"
+      }
+    );
+
+    searchMenu.print(12, 5);
+
+    char navigationInput;
+    string searchString;
+
+    cin >> navigationInput;
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    switch (navigationInput) {
+      case '1':
+        cout << "Enter title to search for: ";
+        getline(cin, searchString);
+        searchResults = searchForBookByTitle(searchString);
+        break;
+      case '2':
+        cout << "Enter ISBN to search for: ";
+        getline(cin, searchString);
+        searchResults = searchForBookByISBN(searchString);
+        break;
+      case '3':
+        cout << "Returning to Inventory Menu.\n";
+        loopShouldEnd = true;
+        pressEnterToContinue();
+        continue; // Skip the rest of the loop
+        break;
     }
-  );
 
-  searchMenu.print(12, 5);
+    const vector<string> bookTitles;
 
-  char navigationInput;
-  string searchString;
+    for (const auto &book : searchResults) {
+      bookTitles.push_back(book.getBookTitle());
+    } // Get titles of books for menu
 
-  cin >> navigationInput;
-  cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    navigationMenu resultsMenu(
+      "Search Results",
+      bookTitles
+    );
 
-  switch (navigationInput) {
-    case '1':
-      cout << "Enter title to search for: ";
-      getline(cin, searchString);
-      searchResults = searchForBookByTitle(searchString);
-      break;
-    case '2':
-      cout << "Enter ISBN to search for: ";
-      getline(cin, searchString);
-      searchResults = searchForBookByISBN(searchString);
-      break;
-    case '3':
-      cout << "Returning to Inventory Menu.\n";
+    resultsMenu.print(12, 5);
+
+    if (searchResults.empty()) {
+      cout << "Not in inventory.\n";
       pressEnterToContinue();
-      break;
-  }
+      continue; // Go back to search menu
+    }
+
+
+  } while (!loopShouldEnd);
+  
+
 }
 
 
