@@ -132,6 +132,16 @@ std::vector<BookType> searchForBookByTitle(const string &searchSubstring) {
   return results;
 }
 
+std::vector<BookType> searchForBookByISBN(const string &searchISBN) {
+  vector<BookType> results;
+  for (const auto &book : inventory) {
+    if (book.getIsbn().find(searchISBN) != string::npos) { // Partial match
+      results.push_back(book);
+    }
+  }
+  return results;
+}
+
 // Inventory stubs (navigation-only)
 void lookUpBook()  { cout << "You selected Look Up Book.\n"; }
 void addBook()
