@@ -122,6 +122,16 @@ void invMenu()
   }
 }
 
+std::vector<BookType> searchForBookByTitle(const string &searchSubstring) {
+  vector<BookType> results;
+  for (const auto &book : inventory) {
+    if (book.getBookTitle().find(searchSubstring) != string::npos) {
+      results.push_back(book);
+    }
+  }
+  return results;
+}
+
 // Inventory stubs (navigation-only)
 void lookUpBook()  { cout << "You selected Look Up Book.\n"; }
 void addBook()
