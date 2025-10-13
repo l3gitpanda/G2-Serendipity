@@ -23,6 +23,7 @@ CS1B – G2: Serendipity
 namespace
 {
     constexpr std::size_t kMaxInventory = 20;
+    // Inventory container: std::vector limited to 20 entries.
     std::vector<bookType> inventory;
     std::deque<std::string> bufferedInputs;
 
@@ -42,6 +43,12 @@ namespace
     {
         Success,
         Cancel
+    };
+
+    enum class SearchType
+    {
+        Title = 1,
+        ISBN
     };
 
     enum class DuplicateResolution
@@ -102,6 +109,22 @@ namespace
         return "";
     }
 
+    std::string fieldName(FieldChoice choice)
+    {
+        switch (choice)
+        {
+            case FieldChoice::Title:     return "Book Title";
+            case FieldChoice::ISBN:      return "ISBN";
+            case FieldChoice::Author:    return "Author";
+            case FieldChoice::Publisher: return "Publisher";
+            case FieldChoice::DateAdded: return "Date Added";
+            case FieldChoice::Quantity:  return "Quantity on Hand";
+            case FieldChoice::Wholesale: return "Wholesale Cost";
+            case FieldChoice::Retail:    return "Retail Price";
+        }
+        return "";
+    }
+
     void captureBufferedInputFromStream()
     {
         while (std::cin.rdbuf()->in_avail() > 0)
@@ -123,11 +146,11 @@ namespace
             std::string value = bufferedInputs.front();
             bufferedInputs.pop_front();
 
-            std::cout << prompt << " (auto-filled): " << value << '\n';
+            std::cout << prompt << " -> " << value << '\n';
             return value;
         }
 
-        std::cout << prompt << " (press ENTER to cancel): ";
+        std::cout << prompt << " -> ";
 
         std::string input;
         if (!std::getline(std::cin, input))
@@ -139,38 +162,42 @@ namespace
         return input;
     }
 
-    void renderAddBookForm(const BookDraft &draft)
+    void renderAddBookForm(const BookDraft &draft, const std::string &statusMessage)
     {
         clearScreen();
 
-        std::size_t currentCount = inventory.size();
-        std::cout << "Serendipity Booksellers\n\n"
-                  << "Inventory Database - Add Book\n\n"
-                  << "DATABASE SIZE: " << kMaxInventory << '\n'
-                  << "Books in Database: " << bookType::getBookCount() << "\n"
-                  << "Add Book (" << (currentCount + 1) << '/' << kMaxInventory << ")\n\n";
+        std::cout << "SERENDIPITY BOOKSELLERS\n\n"
+                  << "ADD BOOK\n\n"
+                  << "DATABASE SIZE: " << kMaxInventory
+                  << " CURRENT BOOK COUNT: " << bookType::getBookCount() << "\n\n";
+
+        if (!statusMessage.empty())
+        {
+            std::cout << statusMessage << "\n\n";
+        }
+
+        std::cout << "--PENDING VALUES--\n";
 
         auto fieldLine = [](int index, const std::string &label, const std::string &value)
         {
-            std::cout << std::setw(2) << index << ") " << label;
-            if (!value.empty())
-            {
-                std::cout << ": " << value;
-            }
-            std::cout << '\n';
+            std::ios::fmtflags flags = std::cout.flags();
+            std::cout << ' ' << index << ") " << std::left << std::setw(34) << label
+                      << "-> " << value << '\n';
+            std::cout.flags(flags);
         };
 
-        fieldLine(1, fieldLabel(FieldChoice::Title), draft.titleSet ? draft.title : "EMPTY");
-        fieldLine(2, fieldLabel(FieldChoice::ISBN), draft.isbnSet ? draft.isbn : "EMPTY");
-        fieldLine(3, fieldLabel(FieldChoice::Author), draft.authorSet ? draft.author : "EMPTY");
-        fieldLine(4, fieldLabel(FieldChoice::Publisher), draft.publisherSet ? draft.publisher : "EMPTY");
-        fieldLine(5, fieldLabel(FieldChoice::DateAdded), draft.dateSet ? draft.dateAdded : "EMPTY");
+        fieldLine(1, fieldLabel(FieldChoice::Title), draft.titleSet ? draft.title : "--EMPTY--");
+        fieldLine(2, fieldLabel(FieldChoice::ISBN), draft.isbnSet ? draft.isbn : "--EMPTY--");
+        fieldLine(3, fieldLabel(FieldChoice::Author), draft.authorSet ? draft.author : "--EMPTY--");
+        fieldLine(4, fieldLabel(FieldChoice::Publisher), draft.publisherSet ? draft.publisher : "--EMPTY--");
+        fieldLine(5, fieldLabel(FieldChoice::DateAdded), draft.dateSet ? draft.dateAdded : "--EMPTY--");
         fieldLine(6, fieldLabel(FieldChoice::Quantity), draft.quantitySet ? std::to_string(draft.quantity) : "0");
         fieldLine(7, fieldLabel(FieldChoice::Wholesale), draft.wholesaleSet ? formatMoney(draft.wholesale) : "$0.00");
         fieldLine(8, fieldLabel(FieldChoice::Retail), draft.retailSet ? formatMoney(draft.retail) : "$0.00");
 
-        std::cout << "\n 9) Save Book to Database\n"
-                  << " 0) Cancel Add Book\n";
+        std::cout << '\n'
+                  << " 9) Save Book to Database\n"
+                  << " 0) Return to Inventory Menu\n";
     }
 
     PromptResult promptString(const std::string &prompt, std::string &value)
@@ -374,7 +401,7 @@ namespace
         return PromptResult::Cancel;
     }
 
-    std::vector<int> searchInventory(const std::string &query)
+    std::vector<int> searchInventory(const std::string &query, SearchType type)
     {
         std::vector<int> matches;
         std::string needle = toLowerCopy(trim(query));
@@ -386,13 +413,10 @@ namespace
         for (std::size_t index = 0; index < inventory.size(); ++index)
         {
             const bookType &book = inventory[index];
-            std::string titleLower  = toLowerCopy(book.getTitle());
-            std::string authorLower = toLowerCopy(book.getAuthor());
-            std::string isbnLower   = toLowerCopy(book.getISBN());
+            std::string haystack =
+                (type == SearchType::Title) ? book.getTitle() : book.getISBN();
 
-            if (titleLower.find(needle) != std::string::npos ||
-                authorLower.find(needle) != std::string::npos ||
-                isbnLower.find(needle) != std::string::npos)
+            if (toLowerCopy(haystack).find(needle) != std::string::npos)
             {
                 matches.push_back(static_cast<int>(index));
             }
@@ -401,7 +425,9 @@ namespace
         return matches;
     }
 
-    int showSearchResults(const std::vector<int> &matches, const std::string &query)
+    int showSearchResults(const std::vector<int> &matches,
+                          const std::string        &query,
+                          SearchType                type)
     {
         while (true)
         {
@@ -411,7 +437,9 @@ namespace
                       << "Inventory Database - Search Results\n\n"
                       << "DATABASE SIZE: " << kMaxInventory << '\n'
                       << "Books in Database: " << bookType::getBookCount() << "\n\n"
-                      << "Results for \"" << query << "\"\n\n";
+                      << "Results for "
+                      << ((type == SearchType::Title) ? "Title" : "ISBN")
+                      << " \"" << query << "\"\n\n";
 
             for (std::size_t i = 0; i < matches.size(); ++i)
             {
@@ -589,7 +617,6 @@ void invMenu()
             case '2':
                 clearScreen();
                 addBook();
-                pressEnterToContinue();
                 break;
             case '0':
                 running = false;
@@ -613,7 +640,43 @@ int lookUpBook()
                   << "Inventory Database - Look Up Book\n\n"
                   << "DATABASE SIZE: " << kMaxInventory << '\n'
                   << "Books in Database: " << bookType::getBookCount() << "\n\n"
-                  << "Enter title, author, or ISBN (press ENTER to cancel): ";
+                  << "Search by:\n"
+                  << " 1) Title\n"
+                  << " 2) ISBN\n"
+                  << " 0) Return to Inventory Menu\n\n"
+                  << "Choice: ";
+
+        std::string modeInput;
+        if (!std::getline(std::cin, modeInput))
+        {
+            return -1;
+        }
+
+        modeInput = trim(modeInput);
+        if (modeInput.empty() || modeInput == "0")
+        {
+            std::cout << "Look Up Book cancelled.\n";
+            return -1;
+        }
+
+        SearchType mode;
+        if (modeInput == "1")
+        {
+            mode = SearchType::Title;
+        }
+        else if (modeInput == "2")
+        {
+            mode = SearchType::ISBN;
+        }
+        else
+        {
+            std::cout << "\nPlease enter 0, 1, or 2.\n";
+            pressEnterToContinue();
+            continue;
+        }
+
+        std::cout << ((mode == SearchType::Title) ? "Enter title" : "Enter ISBN")
+                  << " (press ENTER to cancel): ";
 
         std::string query;
         if (!std::getline(std::cin, query))
@@ -628,16 +691,19 @@ int lookUpBook()
             return -1;
         }
 
-        std::vector<int> matches = searchInventory(query);
+        std::vector<int> matches = searchInventory(query, mode);
         if (matches.empty())
         {
             std::cout << "\nNo matches found.\n";
             pressEnterToContinue();
-            clearScreen();
             continue;
         }
 
-        return showSearchResults(matches, query);
+        int result = showSearchResults(matches, query, mode);
+        if (result != -1)
+        {
+            return result;
+        }
     }
 }
 
@@ -652,30 +718,12 @@ void addBook()
     }
 
     BookDraft draft;
+    std::string statusMessage = "Select a field number to enter information. Leave a field blank while editing to cancel that entry.";
 
-    clearScreen();
-    std::cout << "Serendipity Booksellers\n\n"
-              << "Inventory Database - Add Book\n\n"
-              << "DATABASE SIZE: " << kMaxInventory << '\n'
-              << "Books in Database: " << bookType::getBookCount() << "\n\n"
-              << "Press ENTER at any prompt to cancel.\n\n";
-
-    for (int option = static_cast<int>(FieldChoice::Title);
-         option <= static_cast<int>(FieldChoice::Retail); ++option)
+    while (true)
     {
-        PromptResult result = promptForField(static_cast<FieldChoice>(option), draft);
-        if (result == PromptResult::Cancel)
-        {
-            std::cout << "\nAdd Book cancelled. Returning to Inventory Menu.\n";
-            return;
-        }
-    }
-
-    bool editing = true;
-    while (editing)
-    {
-        renderAddBookForm(draft);
-        std::cout << "\nSelect a field number to edit, 9 to save, or 0 to cancel: ";
+        renderAddBookForm(draft, statusMessage);
+        std::cout << "\nChoice (0-9): ";
 
         std::string choice;
         if (!std::getline(std::cin, choice))
@@ -686,14 +734,13 @@ void addBook()
         choice = trim(choice);
         if (choice.empty())
         {
-            std::cout << "Please select a menu option.\n";
-            pressEnterToContinue();
+            statusMessage = "Please choose a menu option.";
             continue;
         }
 
         if (choice == "0")
         {
-            std::cout << "\nAdd Book cancelled. Returning to Inventory Menu.\n";
+            std::cout << "\nReturning to Inventory Menu.\n";
             return;
         }
 
@@ -701,15 +748,14 @@ void addBook()
         {
             if (!draft.isComplete())
             {
-                std::cout << "All fields must be completed before saving.\n";
-                pressEnterToContinue();
+                statusMessage = "All fields must be completed before saving.";
                 continue;
             }
 
             if (inventory.size() >= kMaxInventory)
             {
-                std::cout << "Inventory full (20/20). Cannot add more books.\n";
-                return;
+                statusMessage = "Inventory full (20/20). Cannot add more books.";
+                continue;
             }
 
             if (auto existingIndex = findBookIndexByISBN(draft.isbn))
@@ -720,13 +766,12 @@ void addBook()
                         std::cout << "\nAdd Book cancelled. Returning to Inventory Menu.\n";
                         return;
                     case DuplicateResolution::EditFields:
+                        statusMessage = "Duplicate ISBN. Update fields before saving.";
                         continue;
                     case DuplicateResolution::CompletedAdd:
-                        if (draft.retail < draft.wholesale)
-                        {
-                            std::cout << "Warning: Retail price is less than wholesale cost.\n";
-                        }
-                        return;
+                        statusMessage = "Existing record updated.";
+                        draft = BookDraft{};
+                        continue;
                 }
             }
 
@@ -740,39 +785,39 @@ void addBook()
                 draft.wholesale,
                 draft.retail);
 
-            std::size_t count = inventory.size();
-            if (count == kMaxInventory)
+            if (draft.retail < draft.wholesale)
             {
-                std::cout << "\nBook added. Inventory is now full (" << count << '/' << kMaxInventory << ").\n";
+                statusMessage = "Book added to database. Warning: Retail price is less than wholesale cost.";
+            }
+            else if (inventory.size() >= kMaxInventory)
+            {
+                statusMessage = "Book added. Inventory is now full (20/20).";
             }
             else
             {
-                std::cout << "\nBook added successfully. Books in Database: "
-                          << count << '/' << kMaxInventory << "\n";
+                statusMessage = "Book added to database.";
             }
 
-            if (draft.retail < draft.wholesale)
-            {
-                std::cout << "Warning: Retail price is less than wholesale cost.\n";
-            }
-
-            return;
+            draft = BookDraft{};
+            continue;
         }
 
         int menuSelection = -1;
         if (!parseNonNegativeInt(choice, menuSelection) ||
             menuSelection < 1 || menuSelection > 8)
         {
-            std::cout << "Please choose an option from the menu.\n";
-            pressEnterToContinue();
+            statusMessage = "Please choose an option from the menu.";
             continue;
         }
 
         PromptResult result = promptForField(static_cast<FieldChoice>(menuSelection), draft);
         if (result == PromptResult::Cancel)
         {
-            std::cout << "\nAdd Book cancelled. Returning to Inventory Menu.\n";
-            return;
+            statusMessage = "Entry cancelled.";
+        }
+        else
+        {
+            statusMessage = fieldName(static_cast<FieldChoice>(menuSelection)) + " saved.";
         }
     }
 }
