@@ -7,31 +7,126 @@ CS1B – G2: Serendipity
   Build:   g++ -std=c++20 -Werror mainmenu.cpp utils.cpp invmenu.cpp reports.cpp bookType.cpp cashier.cpp -o serendipity.out
 */
 #include "bookType.h"
-#include <utility>
 
-BookType::BookType() = default;
+#include <iomanip>
+#include <iostream>
 
-BookType::BookType(const string &bookTitle, const string &isbn, const string &author, const string &publisher,
-           const string &dateAdded, int qtyOnHand, double wholesale, double retail)
-  : bookTitle(bookTitle), isbn(isbn), author(author), publisher(publisher), dateAdded(dateAdded),
-    qtyOnHand(qtyOnHand), wholesale(wholesale), retail(retail) {}
+int bookType::bookCount = 0;
 
-// Getters
-string BookType::getBookTitle() const { return bookTitle; }
-string BookType::getIsbn() const { return isbn; }
-string BookType::getAuthor() const { return author; }
-string BookType::getPublisher() const { return publisher; }
-string BookType::getDateAdded() const { return dateAdded; }
-int BookType::getQtyOnHand() const { return qtyOnHand; }
-double BookType::getWholesale() const { return wholesale; }
-double BookType::getRetail() const { return retail; }
+bookType::bookType()
+{
+  ++bookCount;
+}
 
-// Setters
-void BookType::setBookTitle(const string &title) { bookTitle = title; }
-void BookType::setIsbn(const string &isbn_) { isbn = isbn_; }
-void BookType::setAuthor(const string &author_) { author = author_; }
-void BookType::setPublisher(const string &publisher_) { publisher = publisher_; }
-void BookType::setDateAdded(const string &date) { dateAdded = date; }
-void BookType::setQtyOnHand(int qty) { qtyOnHand = qty; }
-void BookType::setWholesale(double w) { wholesale = w; }
-void BookType::setRetail(double r) { retail = r; }
+bookType::bookType(const std::string &isbnValue, const std::string &titleValue,
+                   const std::string &authorValue, const std::string &publisherValue,
+                   const std::string &dateValue, int qtyValue,
+                   double wholesaleValue, double retailValue)
+  : isbn(isbnValue), title(titleValue), author(authorValue), publisher(publisherValue),
+    dateAdded(dateValue), qtyOnHand(qtyValue), wholesale(wholesaleValue), retail(retailValue)
+{
+  ++bookCount;
+}
+
+bookType::bookType(const bookType &other)
+  : isbn(other.isbn), title(other.title), author(other.author),
+    publisher(other.publisher), dateAdded(other.dateAdded),
+    qtyOnHand(other.qtyOnHand), wholesale(other.wholesale), retail(other.retail)
+{
+  ++bookCount;
+}
+
+bookType::bookType(bookType &&other) noexcept
+  : isbn(other.isbn), title(other.title), author(other.author),
+    publisher(other.publisher), dateAdded(other.dateAdded),
+    qtyOnHand(other.qtyOnHand), wholesale(other.wholesale), retail(other.retail)
+{
+  ++bookCount;
+}
+
+bookType &bookType::operator=(const bookType &other)
+{
+  if (this != &other)
+  {
+    isbn       = other.isbn;
+    title      = other.title;
+    author     = other.author;
+    publisher  = other.publisher;
+    dateAdded  = other.dateAdded;
+    qtyOnHand  = other.qtyOnHand;
+    wholesale  = other.wholesale;
+    retail     = other.retail;
+  }
+  return *this;
+}
+
+bookType &bookType::operator=(bookType &&other) noexcept
+{
+  if (this != &other)
+  {
+    isbn       = other.isbn;
+    title      = other.title;
+    author     = other.author;
+    publisher  = other.publisher;
+    dateAdded  = other.dateAdded;
+    qtyOnHand  = other.qtyOnHand;
+    wholesale  = other.wholesale;
+    retail     = other.retail;
+  }
+  return *this;
+}
+
+bookType::~bookType()
+{
+  --bookCount;
+}
+
+void bookType::setISBN(const std::string &isbnValue) { isbn = isbnValue; }
+void bookType::setTitle(const std::string &titleValue) { title = titleValue; }
+void bookType::setAuthor(const std::string &authorValue) { author = authorValue; }
+void bookType::setPublisher(const std::string &publisherValue) { publisher = publisherValue; }
+void bookType::setDateAdded(const std::string &dateValue) { dateAdded = dateValue; }
+void bookType::setQtyOnHand(int qtyValue) { qtyOnHand = qtyValue; }
+void bookType::setWholesale(double wholesaleValue) { wholesale = wholesaleValue; }
+void bookType::setRetail(double retailValue) { retail = retailValue; }
+
+const std::string &bookType::getISBN() const { return isbn; }
+const std::string &bookType::getTitle() const { return title; }
+const std::string &bookType::getAuthor() const { return author; }
+const std::string &bookType::getPublisher() const { return publisher; }
+const std::string &bookType::getDateAdded() const { return dateAdded; }
+int bookType::getQtyOnHand() const { return qtyOnHand; }
+double bookType::getWholesale() const { return wholesale; }
+double bookType::getRetail() const { return retail; }
+
+int bookType::getBookCount()
+{
+  return bookCount;
+}
+
+bool bookType::equals(const bookType &other) const
+{
+  return isbn == other.isbn && title == other.title && author == other.author &&
+         publisher == other.publisher && dateAdded == other.dateAdded &&
+         qtyOnHand == other.qtyOnHand && wholesale == other.wholesale &&
+         retail == other.retail;
+}
+
+void bookType::print(std::ostream &os) const
+{
+  std::ostream::fmtflags flags = os.flags();
+  std::streamsize precision = os.precision();
+
+  os << "ISBN: " << isbn << '\n'
+     << "Title: " << title << '\n'
+     << "Author: " << author << '\n'
+     << "Publisher: " << publisher << '\n'
+     << "Date Added: " << dateAdded << '\n'
+     << "Quantity on Hand: " << qtyOnHand << '\n'
+     << std::fixed << std::setprecision(2)
+     << "Wholesale Cost: $" << wholesale << '\n'
+     << "Retail Price: $" << retail << '\n';
+
+  os.flags(flags);
+  os.precision(precision);
+}
