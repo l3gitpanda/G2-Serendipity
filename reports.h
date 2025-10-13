@@ -7,13 +7,7 @@ CS1B – G2: Serendipity
   Build:   g++ -std=c++20 -Werror mainmenu.cpp utils.cpp invmenu.cpp reports.cpp bookType.cpp cashier.cpp -o serendipity.out
 */
 
-/***************************/
-/* Minimum Stylesheet:
-/* Programmer: Ian Bagherzadeh
-/* Assignment: G2 — Serendipity (Reports menu & stubs)
-/* Purpose: Reports submenu navigation + stubs
-/* Due Date:
-/***************************/
+
 #ifndef REPORTS_H
 #define REPORTS_H
 
