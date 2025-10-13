@@ -9,12 +9,43 @@ CS1B – G2: Serendipity
 #include "bookType.h"
 #include <utility>
 
-BookType::BookType() = default;
+int BookType::bookCount = 0;
+
+BookType::BookType()
+{
+  ++bookCount;
+}
 
 BookType::BookType(const string &bookTitle, const string &isbn, const string &author, const string &publisher,
            const string &dateAdded, int qtyOnHand, double wholesale, double retail)
   : bookTitle(bookTitle), isbn(isbn), author(author), publisher(publisher), dateAdded(dateAdded),
-    qtyOnHand(qtyOnHand), wholesale(wholesale), retail(retail) {}
+    qtyOnHand(qtyOnHand), wholesale(wholesale), retail(retail)
+{
+  ++bookCount;
+}
+
+BookType::BookType(const BookType &other)
+  : bookTitle(other.bookTitle), isbn(other.isbn), author(other.author), publisher(other.publisher),
+    dateAdded(other.dateAdded), qtyOnHand(other.qtyOnHand), wholesale(other.wholesale), retail(other.retail)
+{
+  ++bookCount;
+}
+
+BookType::BookType(BookType &&other) noexcept
+  : bookTitle(std::move(other.bookTitle)), isbn(std::move(other.isbn)), author(std::move(other.author)),
+    publisher(std::move(other.publisher)), dateAdded(std::move(other.dateAdded)), qtyOnHand(other.qtyOnHand),
+    wholesale(other.wholesale), retail(other.retail)
+{
+  ++bookCount;
+}
+
+BookType::~BookType()
+{
+  if (bookCount > 0)
+  {
+    --bookCount;
+  }
+}
 
 // Getters
 string BookType::getBookTitle() const { return bookTitle; }
@@ -35,3 +66,8 @@ void BookType::setDateAdded(const string &date) { dateAdded = date; }
 void BookType::setQtyOnHand(int qty) { qtyOnHand = qty; }
 void BookType::setWholesale(double w) { wholesale = w; }
 void BookType::setRetail(double r) { retail = r; }
+
+int BookType::getBookCount()
+{
+  return bookCount;
+}
