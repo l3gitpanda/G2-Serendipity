@@ -107,6 +107,13 @@ namespace
         }
     }
 
+    void flushBufferedInputs()
+    {
+        bufferedInputs.clear();
+        captureBufferedInputFromStream();
+        bufferedInputs.clear();
+    }
+
     std::optional<std::string> acquireNextInput(const std::string &prompt)
     {
         if (!bufferedInputs.empty())
@@ -639,42 +646,24 @@ void addBook()
     if (inventory.size() >= kMaxInventory)
     {
         std::cout << "Inventory full (20/20). Cannot add more books.\n";
+        flushBufferedInputs();
         return;
     }
 
     BookDraft draft;
 
-    clearScreen();
-    std::cout << "Serendipity Booksellers\n\n"
-              << "Inventory Database - Add Book\n\n"
-              << "DATABASE SIZE: " << kMaxInventory << '\n'
-              << "Books in Database: " << bookType::getBookCount() << "\n\n"
-              << "Press ENTER at any prompt to cancel.\n\n";
-
-    for (int option = static_cast<int>(FieldChoice::Title);
-         option <= static_cast<int>(FieldChoice::Retail); ++option)
-    {
-        PromptResult result = promptForField(static_cast<FieldChoice>(option), draft);
-        if (result == PromptResult::Cancel)
-        {
-            std::cout << "\nAdd Book cancelled. Returning to Inventory Menu.\n";
-            return;
-        }
-    }
-
-    bool editing = true;
-    while (editing)
+    while (true)
     {
         renderAddBookForm(draft);
-        std::cout << "\nSelect a field number to edit, 9 to save, or 0 to cancel: ";
-
-        std::string choice;
-        if (!std::getline(std::cin, choice))
+        std::optional<std::string> choiceInput = acquireNextInput(
+            "Select a field number to edit, 9 to save, or 0 to cancel");
+        if (!choiceInput.has_value())
         {
+            flushBufferedInputs();
             return;
         }
 
-        choice = trim(choice);
+        std::string choice = trim(*choiceInput);
         if (choice.empty())
         {
             std::cout << "Please select a menu option.\n";
@@ -685,6 +674,7 @@ void addBook()
         if (choice == "0")
         {
             std::cout << "\nAdd Book cancelled. Returning to Inventory Menu.\n";
+            flushBufferedInputs();
             return;
         }
 
@@ -700,6 +690,7 @@ void addBook()
             if (inventory.size() >= kMaxInventory)
             {
                 std::cout << "Inventory full (20/20). Cannot add more books.\n";
+                flushBufferedInputs();
                 return;
             }
 
@@ -709,15 +700,26 @@ void addBook()
                 {
                     case DuplicateResolution::CancelAdd:
                         std::cout << "\nAdd Book cancelled. Returning to Inventory Menu.\n";
+                        flushBufferedInputs();
                         return;
                     case DuplicateResolution::EditFields:
                         continue;
                     case DuplicateResolution::CompletedAdd:
+                    {
                         if (draft.retail < draft.wholesale)
                         {
                             std::cout << "Warning: Retail price is less than wholesale cost.\n";
                         }
-                        return;
+                        draft = BookDraft{};
+                        if (inventory.size() >= kMaxInventory)
+                        {
+                            std::cout << "\nInventory is now full (" << inventory.size()
+                                      << '/' << kMaxInventory << "). Returning to Inventory Menu.\n";
+                            flushBufferedInputs();
+                            return;
+                        }
+                        continue;
+                    }
                 }
             }
 
@@ -747,7 +749,15 @@ void addBook()
                 std::cout << "Warning: Retail price is less than wholesale cost.\n";
             }
 
-            return;
+            draft = BookDraft{};
+            if (count == kMaxInventory)
+            {
+                std::cout << "Returning to Inventory Menu.\n";
+                flushBufferedInputs();
+                return;
+            }
+
+            continue;
         }
 
         int menuSelection = -1;
@@ -763,6 +773,7 @@ void addBook()
         if (result == PromptResult::Cancel)
         {
             std::cout << "\nAdd Book cancelled. Returning to Inventory Menu.\n";
+            flushBufferedInputs();
             return;
         }
     }
