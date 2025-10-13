@@ -1,5 +1,6 @@
 #include "invmenu.h"
 
+#include <deque>
 #include <iomanip>
 #include <iostream>
 #include <optional>
@@ -14,6 +15,7 @@ namespace
 {
     constexpr std::size_t kMaxInventory = 20;
     std::vector<bookType> inventory;
+    std::deque<std::string> bufferedInputs;
 
     enum class FieldChoice
     {
@@ -91,6 +93,43 @@ namespace
         return "";
     }
 
+    void captureBufferedInputFromStream()
+    {
+        while (std::cin.rdbuf()->in_avail() > 0)
+        {
+            std::string nextLine;
+            if (!std::getline(std::cin, nextLine))
+            {
+                break;
+            }
+
+            bufferedInputs.push_back(nextLine);
+        }
+    }
+
+    std::optional<std::string> acquireNextInput(const std::string &prompt)
+    {
+        if (!bufferedInputs.empty())
+        {
+            std::string value = bufferedInputs.front();
+            bufferedInputs.pop_front();
+
+            std::cout << prompt << " (auto-filled): " << value << '\n';
+            return value;
+        }
+
+        std::cout << prompt << " (press ENTER to cancel): ";
+
+        std::string input;
+        if (!std::getline(std::cin, input))
+        {
+            return std::nullopt;
+        }
+
+        captureBufferedInputFromStream();
+        return input;
+    }
+
     void renderAddBookForm(const BookDraft &draft)
     {
         clearScreen();
@@ -129,15 +168,13 @@ namespace
     {
         for (;;)
         {
-            std::cout << prompt << " (press ENTER to cancel): ";
-
-            std::string input;
-            if (!std::getline(std::cin, input))
+            std::optional<std::string> input = acquireNextInput(prompt);
+            if (!input.has_value())
             {
                 return PromptResult::Cancel;
             }
 
-            std::string trimmed = trim(input);
+            std::string trimmed = trim(*input);
             if (trimmed.empty())
             {
                 return PromptResult::Cancel;
@@ -152,15 +189,13 @@ namespace
     {
         for (;;)
         {
-            std::cout << prompt << " (press ENTER to cancel): ";
-
-            std::string input;
-            if (!std::getline(std::cin, input))
+            std::optional<std::string> input = acquireNextInput(prompt);
+            if (!input.has_value())
             {
                 return PromptResult::Cancel;
             }
 
-            std::string trimmed = trim(input);
+            std::string trimmed = trim(*input);
             if (trimmed.empty())
             {
                 return PromptResult::Cancel;
@@ -181,15 +216,13 @@ namespace
     {
         for (;;)
         {
-            std::cout << prompt << " (press ENTER to cancel): ";
-
-            std::string input;
-            if (!std::getline(std::cin, input))
+            std::optional<std::string> input = acquireNextInput(prompt);
+            if (!input.has_value())
             {
                 return PromptResult::Cancel;
             }
 
-            std::string trimmed = trim(input);
+            std::string trimmed = trim(*input);
             if (trimmed.empty())
             {
                 return PromptResult::Cancel;
@@ -211,15 +244,13 @@ namespace
     {
         for (;;)
         {
-            std::cout << prompt << " (press ENTER to cancel): ";
-
-            std::string input;
-            if (!std::getline(std::cin, input))
+            std::optional<std::string> input = acquireNextInput(prompt);
+            if (!input.has_value())
             {
                 return PromptResult::Cancel;
             }
 
-            std::string trimmed = trim(input);
+            std::string trimmed = trim(*input);
             if (trimmed.empty())
             {
                 return PromptResult::Cancel;
