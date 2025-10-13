@@ -7,14 +7,79 @@ CS1B – G2: Serendipity
   Build:   g++ -std=c++20 -Werror mainmenu.cpp utils.cpp invmenu.cpp reports.cpp bookType.cpp cashier.cpp -o serendipity.out
 */
 #include "bookType.h"
+
 #include <utility>
 
-BookType::BookType() = default;
+int BookType::bookCount = 0;
 
-BookType::BookType(const string &bookTitle, const string &isbn, const string &author, const string &publisher,
-           const string &dateAdded, int qtyOnHand, double wholesale, double retail)
-  : bookTitle(bookTitle), isbn(isbn), author(author), publisher(publisher), dateAdded(dateAdded),
-    qtyOnHand(qtyOnHand), wholesale(wholesale), retail(retail) {}
+BookType::BookType()
+  : qtyOnHand(0), wholesale(0.0), retail(0.0)
+{
+  ++bookCount;
+}
+
+BookType::BookType(const string &bookTitleValue, const string &isbnValue, const string &authorValue,
+           const string &publisherValue, const string &dateAddedValue, int qtyOnHandValue,
+           double wholesaleValue, double retailValue)
+  : bookTitle(bookTitleValue), isbn(isbnValue), author(authorValue), publisher(publisherValue),
+    dateAdded(dateAddedValue), qtyOnHand(qtyOnHandValue), wholesale(wholesaleValue), retail(retailValue)
+{
+  ++bookCount;
+}
+
+BookType::BookType(const BookType &other)
+  : bookTitle(other.bookTitle), isbn(other.isbn), author(other.author), publisher(other.publisher),
+    dateAdded(other.dateAdded), qtyOnHand(other.qtyOnHand), wholesale(other.wholesale), retail(other.retail)
+{
+  ++bookCount;
+}
+
+BookType::BookType(BookType &&other) noexcept
+  : bookTitle(std::move(other.bookTitle)), isbn(std::move(other.isbn)), author(std::move(other.author)),
+    publisher(std::move(other.publisher)), dateAdded(std::move(other.dateAdded)),
+    qtyOnHand(other.qtyOnHand), wholesale(other.wholesale), retail(other.retail)
+{
+  ++bookCount;
+}
+
+BookType &BookType::operator=(const BookType &other)
+{
+  if (this != &other)
+  {
+    bookTitle = other.bookTitle;
+    isbn = other.isbn;
+    author = other.author;
+    publisher = other.publisher;
+    dateAdded = other.dateAdded;
+    qtyOnHand = other.qtyOnHand;
+    wholesale = other.wholesale;
+    retail = other.retail;
+  }
+
+  return *this;
+}
+
+BookType &BookType::operator=(BookType &&other) noexcept
+{
+  if (this != &other)
+  {
+    bookTitle = std::move(other.bookTitle);
+    isbn = std::move(other.isbn);
+    author = std::move(other.author);
+    publisher = std::move(other.publisher);
+    dateAdded = std::move(other.dateAdded);
+    qtyOnHand = other.qtyOnHand;
+    wholesale = other.wholesale;
+    retail = other.retail;
+  }
+
+  return *this;
+}
+
+BookType::~BookType()
+{
+  --bookCount;
+}
 
 // Getters
 string BookType::getBookTitle() const { return bookTitle; }
@@ -35,3 +100,8 @@ void BookType::setDateAdded(const string &date) { dateAdded = date; }
 void BookType::setQtyOnHand(int qty) { qtyOnHand = qty; }
 void BookType::setWholesale(double w) { wholesale = w; }
 void BookType::setRetail(double r) { retail = r; }
+
+int BookType::getBookCount()
+{
+  return bookCount;
+}

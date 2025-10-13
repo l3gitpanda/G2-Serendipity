@@ -7,22 +7,293 @@ CS1B – G2: Serendipity
   Build:   g++ -std=c++20 -Werror mainmenu.cpp utils.cpp invmenu.cpp reports.cpp bookType.cpp cashier.cpp -o serendipity.out
 */
 
+#include <algorithm>
+#include <cctype>
+#include <iomanip>
 #include <iostream>
-#include <string>
-#include <vector>
 #include <limits>
 #include <sstream>
-#include <cctype>
+#include <string>
+#include <vector>
+
+#include "bookType.h"
+#include "bookinfo.h"
 #include "invmenu.h"
 #include "utils.h"
-#include "bookType.h"
+
 using namespace std;
 
 namespace
 {
-  static vector<BookType> inventory;
   constexpr size_t kMaxInventory = 20;
 
+  // Container choice: std::vector<BookType> with capacity capped at 20 records.
+  static vector<BookType> inventory;
+
+  struct PendingBook
+  {
+    string title;
+    string isbn;
+    string author;
+    string publisher;
+    string dateAdded;
+    int quantity = 0;
+    double wholesale = 0.0;
+    double retail = 0.0;
+
+    bool titleSet = false;
+    bool isbnSet = false;
+    bool authorSet = false;
+    bool publisherSet = false;
+    bool dateSet = false;
+    bool qtySet = false;
+    bool wholesaleSet = false;
+    bool retailSet = false;
+  };
+
+  string toLowerCopy(const string &value)
+  {
+    string lowered;
+    lowered.reserve(value.size());
+    for (char ch : value)
+    {
+      lowered.push_back(static_cast<char>(tolower(static_cast<unsigned char>(ch))));
+    }
+    return lowered;
+  }
+
+  bool isValidDate(const string &date)
+  {
+    if (date.size() != 10)
+    {
+      return false;
+    }
+
+    for (size_t i = 0; i < date.size(); ++i)
+    {
+      if (i == 2 || i == 5)
+      {
+        if (date[i] != '/')
+        {
+          return false;
+        }
+        continue;
+      }
+
+      if (!isdigit(static_cast<unsigned char>(date[i])))
+      {
+        return false;
+      }
+    }
+
+    const int month = stoi(date.substr(0, 2));
+    const int day = stoi(date.substr(3, 2));
+
+    if (month < 1 || month > 12)
+    {
+      return false;
+    }
+
+    if (day < 1 || day > 31)
+    {
+      return false;
+    }
+
+    return true;
+  }
+
+  bool allFieldsFilled(const PendingBook &pending)
+  {
+    return pending.titleSet && pending.isbnSet && pending.authorSet && pending.publisherSet &&
+           pending.dateSet && pending.qtySet && pending.wholesaleSet && pending.retailSet;
+  }
+
+  void renderInventoryHeader(const string &subtitle)
+  {
+    clearScreen();
+    cout << "Serendipity Booksellers\n";
+    cout << subtitle << "\n\n";
+    cout << "DATABASE SIZE: " << kMaxInventory << '\n';
+    cout << "CURRENT BOOK COUNT: " << BookType::getBookCount() << "\n\n";
+  }
+
+  string formatMoney(double amount)
+  {
+    ostringstream out;
+    out << fixed << setprecision(2) << '$' << amount;
+    return out.str();
+  }
+
+  void displayPendingBook(const PendingBook &pending)
+  {
+    cout << left << setw(28) << "1. Enter Book Title" << ": "
+         << (pending.titleSet ? pending.title : "EMPTY") << '\n';
+    cout << left << setw(28) << "2. Enter ISBN" << ": "
+         << (pending.isbnSet ? pending.isbn : "EMPTY") << '\n';
+    cout << left << setw(28) << "3. Enter Author" << ": "
+         << (pending.authorSet ? pending.author : "EMPTY") << '\n';
+    cout << left << setw(28) << "4. Enter Publisher" << ": "
+         << (pending.publisherSet ? pending.publisher : "EMPTY") << '\n';
+    cout << left << setw(28) << "5. Enter Date Added" << ": "
+         << (pending.dateSet ? pending.dateAdded : "EMPTY") << '\n';
+    cout << left << setw(28) << "6. Enter Quantity on Hand" << ": "
+         << (pending.qtySet ? to_string(pending.quantity) : "0") << '\n';
+    cout << left << setw(28) << "7. Enter Wholesale Cost" << ": "
+         << (pending.wholesaleSet ? formatMoney(pending.wholesale) : "$0.00") << '\n';
+    cout << left << setw(28) << "8. Enter Retail Price" << ": "
+         << (pending.retailSet ? formatMoney(pending.retail) : "$0.00") << '\n';
+    cout << "9. Save Book to Database\n";
+    cout << "10. Return to Inventory Menu\n\n";
+  }
+
+  void promptForString(const string &label, string &out, bool &flag)
+  {
+    while (true)
+    {
+      cout << label << ": ";
+      string input;
+      getline(cin, input);
+      string trimmed = trim(input);
+      if (trimmed.empty())
+      {
+        cout << label << " cannot be blank.\n";
+        continue;
+      }
+
+      out = trimmed;
+      flag = true;
+      break;
+    }
+  }
+
+  void promptForDate(string &out, bool &flag)
+  {
+    while (true)
+    {
+      cout << "Date Added (mm/dd/yyyy): ";
+      string input;
+      getline(cin, input);
+      string trimmed = trim(input);
+
+      if (trimmed.empty())
+      {
+        cout << "Date Added cannot be blank.\n";
+        continue;
+      }
+
+      if (!isValidDate(trimmed))
+      {
+        cout << "Please enter a valid date in mm/dd/yyyy format.\n";
+        continue;
+      }
+
+      out = trimmed;
+      flag = true;
+      break;
+    }
+  }
+
+  void promptForNonNegativeInt(const string &label, int &out, bool &flag)
+  {
+    while (true)
+    {
+      cout << label << ": ";
+      string input;
+      getline(cin, input);
+      string trimmed = trim(input);
+      if (trimmed.empty())
+      {
+        cout << label << " must be provided.\n";
+        continue;
+      }
+
+      int value = 0;
+      if (!parseNonNegativeInt(trimmed, value))
+      {
+        cout << label << " must be a non-negative integer.\n";
+        continue;
+      }
+
+      out = value;
+      flag = true;
+      break;
+    }
+  }
+
+  void promptForNonNegativeDouble(const string &label, double &out, bool &flag)
+  {
+    while (true)
+    {
+      cout << label << ": ";
+      string input;
+      getline(cin, input);
+      string trimmed = trim(input);
+      if (trimmed.empty())
+      {
+        cout << label << " must be provided.\n";
+        continue;
+      }
+
+      double value = 0.0;
+      if (!parseNonNegativeDouble(trimmed, value))
+      {
+        cout << label << " must be a non-negative number.\n";
+        continue;
+      }
+
+      out = value;
+      flag = true;
+      break;
+    }
+  }
+
+  vector<size_t> searchByTitle(const string &needle)
+  {
+    vector<size_t> matches;
+    const string loweredNeedle = toLowerCopy(needle);
+
+    for (size_t index = 0; index < inventory.size(); ++index)
+    {
+      const string loweredTitle = toLowerCopy(inventory[index].getBookTitle());
+      if (loweredTitle.find(loweredNeedle) != string::npos)
+      {
+        matches.push_back(index);
+      }
+    }
+
+    return matches;
+  }
+
+  vector<size_t> searchByIsbn(const string &needle)
+  {
+    vector<size_t> matches;
+    const string loweredNeedle = toLowerCopy(needle);
+
+    for (size_t index = 0; index < inventory.size(); ++index)
+    {
+      const string loweredIsbn = toLowerCopy(inventory[index].getIsbn());
+      if (loweredIsbn.find(loweredNeedle) != string::npos)
+      {
+        matches.push_back(index);
+      }
+    }
+
+    return matches;
+  }
+
+  void displaySearchResults(const vector<size_t> &matches)
+  {
+    cout << "\nSearch Results\n";
+    cout << "--------------\n";
+
+    for (size_t i = 0; i < matches.size(); ++i)
+    {
+      const BookType &book = inventory[matches[i]];
+      cout << (i + 1) << ". " << book.getBookTitle() << " (ISBN: " << book.getIsbn() << ")\n";
+    }
+
+    cout << (matches.size() + 1) << ". Return to Search Menu\n\n";
+  }
 
   bool confirmSave()
   {
@@ -32,12 +303,6 @@ namespace
       string input;
       getline(cin, input);
 
-      if (input.empty())
-      {
-        cout << "Add book cancelled.\n";
-        return false;
-      }
-
       string trimmed = trim(input);
       if (trimmed.empty())
       {
@@ -45,22 +310,21 @@ namespace
         continue;
       }
 
-      char response = static_cast<char>(tolower(static_cast<unsigned char>(trimmed[0])));
+      const char response = static_cast<char>(tolower(static_cast<unsigned char>(trimmed[0])));
       if (response == 'y')
       {
         return true;
       }
-
       if (response == 'n')
       {
-        cout << "Add book cancelled.\n";
+        cout << "Save cancelled.\n";
         return false;
       }
 
       cout << "Please enter Y or N.\n";
     }
   }
-} // namespace
+}
 
 static void printInvMenu()
 {
@@ -96,23 +360,19 @@ void invMenu()
     switch (input[0])
     {
       case '1':
-        clearScreen();
         lookUpBook();
-        pressEnterToContinue();
         break;
       case '2':
-        clearScreen();
         addBook();
-        pressEnterToContinue();
         break;
       case '3':
         clearScreen();
-        editBook();
+        cout << "You selected Edit Book.\n";
         pressEnterToContinue();
         break;
       case '4':
         clearScreen();
-        deleteBook();
+        cout << "You selected Delete Book.\n";
         pressEnterToContinue();
         break;
       case '5':
@@ -122,190 +382,220 @@ void invMenu()
   }
 }
 
-std::vector<BookType> searchForBookByTitle(const string &searchSubstring) {
-  vector<BookType> results;
-  for (const auto &book : inventory) {
-    if (book.getBookTitle().find(searchSubstring) != string::npos) {
-      results.push_back(book);
-    }
-  }
-  return results;
-}
+void lookUpBook()
+{
+  bool returnToInventory = false;
 
-std::vector<BookType> searchForBookByISBN(const string &searchISBN) {
-  vector<BookType> results;
-  for (const auto &book : inventory) {
-    if (book.getIsbn().find(searchISBN) != string::npos) { // Partial match
-      results.push_back(book);
-    }
-  }
-  return results;
-}
+  while (!returnToInventory)
+  {
+    renderInventoryHeader("Inventory Database: Look Up Book");
 
-void chooseBookFromResults(vector<BookType> &searchResults) {
-  bool loopShouldEnd = false;
-  do {
-    clearScreen(); // Clear the screen before printing options
-        const vector<string> bookNavigationOptions;
+    cout << "1. Search by Title\n";
+    cout << "2. Search by ISBN\n";
+    cout << "3. Return to Inventory Menu\n\n";
+    cout << "Enter Your Choice: ";
 
-    for (const auto &book : searchResults) {
-      bookNavigationOptions.push_back(book.getBookTitle());
-    } // Get titles of books for menu
+    string choice;
+    getline(cin, choice);
 
-    bookNavigationOptions.push_back("Return to Search Menu");
-
-    navigationMenu resultsMenu(
-      "Search Results",
-      bookNavigationOptions
-    );
-
-    resultsMenu.print(12, 5);
-
-    if (searchResults.empty()) {
-      cout << "Not in inventory.\n";
+    if (choice.size() != 1 || choice[0] < '1' || choice[0] > '3')
+    {
+      cout << "\nPlease enter a number in the range 1 – 3.\n";
       pressEnterToContinue();
-      loopShouldEnd = true;
-      continue; // Go back to search menu
-    }
-
-    char bookNavigationChoice;
-
-    cin >> bookNavigationChoice;
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
-    if (bookNavigationChoice < '1' || bookNavigationChoice > static_cast<char>('0' + searchResults.size() + 1)) {
-      cout << "Please enter a valid option.\n";
-      pressEnterToContinue();
-      continue; // Reprint menu
-    }
-    
-    if (bookNavigationChoice == static_cast<char>('0' + searchResults.size() + 1)) {
-      // Return to search menu
-      loopShouldEnd = true;
       continue;
     }
 
-    /*
-    bookInfo(searchResults[
-      bookNavigationChoice - 
-      static_cast<int>('1')
-    ]);
-    */ 
-  } while (!loopShouldEnd);
-}
-
-// Inventory stubs (navigation-only)
-void lookUpBook()  { 
-  bool loopShouldEnd = false;
-  do {
-    clearScreen(); // Clear the screen before printing options
-
-    vector<BookType> searchResults;
-  
-    cout << "Look Up a Book.\n"; 
-    cout << "---------------\n";
-
-    navigationMenu searchMenu(
-      "Search Menu",
-      {
-        "Search by Title",
-        "Search by ISBN",
-        "Return to Inventory Menu"
-      }
-    );
-
-    searchMenu.print(12, 5);
-
-    char navigationInput;
-    string searchString;
-
-    cin >> navigationInput;
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
-    switch (navigationInput) {
-      case '1':
-        cout << "Enter title to search for: ";
-        getline(cin, searchString);
-        searchResults = searchForBookByTitle(searchString);
-        break;
-      case '2':
-        cout << "Enter ISBN to search for: ";
-        getline(cin, searchString);
-        searchResults = searchForBookByISBN(searchString);
-        break;
-      case '3':
-        cout << "Returning to Inventory Menu.\n";
-        loopShouldEnd = true;
-        pressEnterToContinue();
-        continue; // Skip the rest of the loop
-        break;
+    if (choice[0] == '3')
+    {
+      returnToInventory = true;
+      continue;
     }
 
-    chooseBookFromResults(searchResults);
+    cout << ((choice[0] == '1') ? "Enter title to search for: " : "Enter ISBN to search for: ");
+    string searchValue;
+    getline(cin, searchValue);
+    searchValue = trim(searchValue);
 
+    if (searchValue.empty())
+    {
+      cout << "\nPlease enter a search term.\n";
+      pressEnterToContinue();
+      continue;
+    }
 
-  } while (!loopShouldEnd);
-  
+    vector<size_t> matches = (choice[0] == '1') ? searchByTitle(searchValue) : searchByIsbn(searchValue);
 
+    if (matches.empty())
+    {
+      cout << "\nNot in inventory.\n";
+      pressEnterToContinue();
+      continue;
+    }
+
+    while (true)
+    {
+      renderInventoryHeader("Inventory Database: Look Up Book");
+      cout << "Search term: " << searchValue << "\n";
+      displaySearchResults(matches);
+      cout << "Enter Your Choice: ";
+
+      string resultChoice;
+      getline(cin, resultChoice);
+
+      if (resultChoice.empty() || resultChoice.find_first_not_of("0123456789") != string::npos)
+      {
+        cout << "\nPlease enter a valid option.\n";
+        pressEnterToContinue();
+        continue;
+      }
+
+      size_t selection = static_cast<size_t>(stoi(resultChoice));
+      if (selection == 0 || selection > matches.size() + 1)
+      {
+        cout << "\nPlease enter a valid option.\n";
+        pressEnterToContinue();
+        continue;
+      }
+
+      if (selection == matches.size() + 1)
+      {
+        break; // return to previous menu
+      }
+
+      const BookType &chosen = inventory[matches[selection - 1]];
+      renderInventoryHeader("Inventory Database: Book Info");
+      bookInfo(chosen);
+      pressEnterToContinue();
+    }
+  }
 }
-
 
 void addBook()
 {
   if (inventory.size() >= kMaxInventory)
   {
+    clearScreen();
     cout << "Inventory full (20/20). Cannot add more books.\n";
+    pressEnterToContinue();
     return;
   }
 
-  cout << "Add a Book to Inventory\n";
-  cout << "-----------------------\n";
+  PendingBook pending;
+  bool editing = true;
 
-  BookType record;
+  while (editing)
+  {
+    renderInventoryHeader("Inventory Database: Add Book");
+    displayPendingBook(pending);
+    cout << "Enter Your Choice: ";
 
-  string bookTitle, isbn, author, publisher, dateAdded;
-  int qtyOnHand;
-  double wholesale, retail;
+    string choice;
+    getline(cin, choice);
 
-  if (!promptStringField("Book Title", bookTitle))
-    return;
-  if (!promptStringField("ISBN", isbn))
-    return;
-  if (!promptStringField("Author", author))
-    return;
-  if (!promptStringField("Publisher", publisher))
-    return;
-  if (!promptStringField("Date Added", dateAdded))
-    return;
-  if (!promptNonNegativeIntField("Quantity on Hand", qtyOnHand))
-    return;
-  if (!promptNonNegativeDoubleField("Wholesale Cost", wholesale))
-    return;
-  if (!promptNonNegativeDoubleField("Retail Price", retail))
-    return;
+    if (choice.empty())
+    {
+      cout << "\nPlease enter a valid option.\n";
+      pressEnterToContinue();
+      continue;
+    }
 
-  if (retail < wholesale)
-    cout << "Warning: Retail price is less than wholesale cost.\n";
+    if (choice == "1")
+    {
+      promptForString("Enter Book Title", pending.title, pending.titleSet);
+    }
+    else if (choice == "2")
+    {
+      promptForString("Enter ISBN", pending.isbn, pending.isbnSet);
+    }
+    else if (choice == "3")
+    {
+      promptForString("Enter Author", pending.author, pending.authorSet);
+    }
+    else if (choice == "4")
+    {
+      promptForString("Enter Publisher", pending.publisher, pending.publisherSet);
+    }
+    else if (choice == "5")
+    {
+      promptForDate(pending.dateAdded, pending.dateSet);
+    }
+    else if (choice == "6")
+    {
+      promptForNonNegativeInt("Enter Quantity on Hand", pending.quantity, pending.qtySet);
+    }
+    else if (choice == "7")
+    {
+      promptForNonNegativeDouble("Enter Wholesale Cost", pending.wholesale, pending.wholesaleSet);
+    }
+    else if (choice == "8")
+    {
+      promptForNonNegativeDouble("Enter Retail Price", pending.retail, pending.retailSet);
+    }
+    else if (choice == "9")
+    {
+      if (inventory.size() >= kMaxInventory)
+      {
+        cout << "\nInventory full (20/20). Cannot add more books.\n";
+        pressEnterToContinue();
+        return;
+      }
 
-  if (!confirmSave())
-    return;
+      if (!allFieldsFilled(pending))
+      {
+        cout << "\nAll fields must be completed before saving.\n";
+        pressEnterToContinue();
+        continue;
+      }
 
-  BookType record;
-  record.setBookTitle(bookTitle);
-  record.setIsbn(isbn);
-  record.setAuthor(author);
-  record.setPublisher(publisher);
-  record.setDateAdded(dateAdded);
-  record.setQtyOnHand(qtyOnHand);
-  record.setWholesale(wholesale);
-  record.setRetail(retail);
+      if (pending.retail < pending.wholesale)
+      {
+        cout << "\nRetail price cannot be less than wholesale cost.\n";
+        pressEnterToContinue();
+        continue;
+      }
 
-  inventory.push_back(record);
+      if (!confirmSave())
+      {
+        pressEnterToContinue();
+        continue;
+      }
 
-  cout << "\nBook added successfully.\n";
-  cout << "Inventory count: " << inventory.size() << '/' << kMaxInventory << ".\n";
-  if (inventory.size() == kMaxInventory)
-    cout << "Inventory now full (20/20).\n";
+      inventory.emplace_back(pending.title, pending.isbn, pending.author, pending.publisher,
+                             pending.dateAdded, pending.quantity, pending.wholesale, pending.retail);
+
+      cout << "\nBook added successfully.\n";
+      cout << "Inventory count: " << inventory.size() << '/' << kMaxInventory << "\n";
+      if (inventory.size() == kMaxInventory)
+      {
+        cout << "Inventory now full (20/20).\n";
+      }
+      pressEnterToContinue();
+      editing = false;
+    }
+    else if (choice == "10")
+    {
+      cout << "\nReturning to Inventory Menu.\n";
+      pressEnterToContinue();
+      editing = false;
+    }
+    else
+    {
+      cout << "\nPlease enter a valid option.\n";
+      pressEnterToContinue();
+    }
+  }
 }
-void editBook()    { cout << "You selected Edit Book.\n"; }
-void deleteBook()  { cout << "You selected Delete Book.\n"; }
+
+void editBook()
+{
+  clearScreen();
+  cout << "You selected Edit Book.\n";
+  pressEnterToContinue();
+}
+
+void deleteBook()
+{
+  clearScreen();
+  cout << "You selected Delete Book.\n";
+  pressEnterToContinue();
+}
