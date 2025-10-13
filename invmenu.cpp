@@ -1,3 +1,12 @@
+/*
+CS1B – G2: Serendipity
+  Partner A: Ryan Posey — role: driver (mainmenu.cpp)
+  Partner B: Ian Bagherzadeh — role: Inventory Manager (invMenu.cpp/.h)
+  Date: 10/13/2025
+  Purpose: Inventory Menu
+  Build:   g++ -std=c++20 -Werror mainmenu.cpp utils.cpp invmenu.cpp reports.cpp bookType.cpp cashier.cpp -o serendipity.out
+*/
+
 #include "invmenu.h"
 
 #include <deque>
