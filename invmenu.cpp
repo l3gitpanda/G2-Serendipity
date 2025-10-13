@@ -130,27 +130,16 @@ namespace
         return input;
     }
 
-    void renderBookForm(const BookDraft &draft,
-                        const std::string &heading,
-                        const std::string &subheading,
-                        const std::string &saveLabel,
-                        const std::string &cancelLabel)
+    void renderAddBookForm(const BookDraft &draft)
     {
         clearScreen();
 
+        std::size_t currentCount = inventory.size();
         std::cout << "Serendipity Booksellers\n\n"
-                  << heading << "\n\n"
+                  << "Inventory Database - Add Book\n\n"
                   << "DATABASE SIZE: " << kMaxInventory << '\n'
-                  << "Books in Database: " << bookType::getBookCount() << "\n";
-
-        if (!subheading.empty())
-        {
-            std::cout << subheading << "\n\n";
-        }
-        else
-        {
-            std::cout << '\n';
-        }
+                  << "Books in Database: " << bookType::getBookCount() << "\n"
+                  << "Add Book (" << (currentCount + 1) << '/' << kMaxInventory << ")\n\n";
 
         auto fieldLine = [](int index, const std::string &label, const std::string &value)
         {
@@ -171,8 +160,8 @@ namespace
         fieldLine(7, fieldLabel(FieldChoice::Wholesale), draft.wholesaleSet ? formatMoney(draft.wholesale) : "$0.00");
         fieldLine(8, fieldLabel(FieldChoice::Retail), draft.retailSet ? formatMoney(draft.retail) : "$0.00");
 
-        std::cout << "\n 9) " << saveLabel << "\n"
-                  << " 0) " << cancelLabel << "\n";
+        std::cout << "\n 9) Save Book to Database\n"
+                  << " 0) Cancel Add Book\n";
     }
 
     PromptResult promptString(const std::string &prompt, std::string &value)
@@ -376,128 +365,6 @@ namespace
         return PromptResult::Cancel;
     }
 
-    PromptResult promptEditableString(FieldChoice choice, std::string &value)
-    {
-        while (true)
-        {
-            std::cout << fieldLabel(choice) << " (leave blank to keep \"" << value
-                      << "\"): ";
-
-            std::string input;
-            if (!std::getline(std::cin, input))
-            {
-                return PromptResult::Cancel;
-            }
-
-            captureBufferedInputFromStream();
-
-            std::string trimmed = trim(input);
-            if (trimmed.empty())
-            {
-                return PromptResult::Success;
-            }
-
-            value = trimmed;
-            return PromptResult::Success;
-        }
-    }
-
-    PromptResult promptEditableDate(FieldChoice choice, std::string &value)
-    {
-        while (true)
-        {
-            std::cout << fieldLabel(choice) << " (leave blank to keep " << value << "): ";
-
-            std::string input;
-            if (!std::getline(std::cin, input))
-            {
-                return PromptResult::Cancel;
-            }
-
-            captureBufferedInputFromStream();
-
-            std::string trimmed = trim(input);
-            if (trimmed.empty())
-            {
-                return PromptResult::Success;
-            }
-
-            if (!isValidDate(trimmed))
-            {
-                std::cout << "Please enter the date in mm/dd/yyyy format.\n";
-                continue;
-            }
-
-            value = trimmed;
-            return PromptResult::Success;
-        }
-    }
-
-    PromptResult promptEditableQuantity(FieldChoice choice, int &value)
-    {
-        while (true)
-        {
-            std::cout << fieldLabel(choice) << " (leave blank to keep " << value << "): ";
-
-            std::string input;
-            if (!std::getline(std::cin, input))
-            {
-                return PromptResult::Cancel;
-            }
-
-            captureBufferedInputFromStream();
-
-            std::string trimmed = trim(input);
-            if (trimmed.empty())
-            {
-                return PromptResult::Success;
-            }
-
-            int parsed = 0;
-            if (!parseNonNegativeInt(trimmed, parsed))
-            {
-                std::cout << "Please enter a non-negative whole number.\n";
-                continue;
-            }
-
-            value = parsed;
-            return PromptResult::Success;
-        }
-    }
-
-    PromptResult promptEditableMoney(FieldChoice choice, double &value)
-    {
-        while (true)
-        {
-            std::cout << fieldLabel(choice) << " (leave blank to keep "
-                      << formatMoney(value) << "): ";
-
-            std::string input;
-            if (!std::getline(std::cin, input))
-            {
-                return PromptResult::Cancel;
-            }
-
-            captureBufferedInputFromStream();
-
-            std::string trimmed = trim(input);
-            if (trimmed.empty())
-            {
-                return PromptResult::Success;
-            }
-
-            double parsed = 0.0;
-            if (!parseNonNegativeDouble(trimmed, parsed))
-            {
-                std::cout << "Please enter a non-negative number.\n";
-                continue;
-            }
-
-            value = parsed;
-            return PromptResult::Success;
-        }
-    }
-
     std::vector<int> searchInventory(const std::string &query)
     {
         std::vector<int> matches;
@@ -670,8 +537,6 @@ static void printInvMenu()
               << "Inventory Menu\n\n"
               << "1) Look Up Book\n"
               << "2) Add Book\n"
-              << "3) Edit Book\n"
-              << "4) Delete Book\n"
               << "0) Return to Main Menu\n\n"
               << "Choice: ";
 }
@@ -693,10 +558,9 @@ void invMenu()
         }
 
         input = trim(input);
-        if (input.size() != 1 ||
-            (input[0] != '0' && input[0] != '1' && input[0] != '2' && input[0] != '3' && input[0] != '4'))
+        if (input.size() != 1 || (input[0] != '0' && input[0] != '1' && input[0] != '2'))
         {
-            std::cout << "\nPlease enter 0, 1, 2, 3, or 4.\n";
+            std::cout << "\nPlease enter 0, 1, or 2.\n";
             pressEnterToContinue();
             continue;
         }
@@ -716,16 +580,6 @@ void invMenu()
             case '2':
                 clearScreen();
                 addBook();
-                pressEnterToContinue();
-                break;
-            case '3':
-                clearScreen();
-                editBook();
-                pressEnterToContinue();
-                break;
-            case '4':
-                clearScreen();
-                deleteBook();
                 pressEnterToContinue();
                 break;
             case '0':
@@ -811,14 +665,7 @@ void addBook()
     bool editing = true;
     while (editing)
     {
-        std::size_t currentCount = inventory.size();
-        std::string subheading = "Add Book (" + std::to_string(currentCount + 1) + '/' +
-                                 std::to_string(kMaxInventory) + ')';
-        renderBookForm(draft,
-                       "Inventory Database - Add Book",
-                       subheading,
-                       "Save Book to Database",
-                       "Cancel Add Book");
+        renderAddBookForm(draft);
         std::cout << "\nSelect a field number to edit, 9 to save, or 0 to cancel: ";
 
         std::string choice;
@@ -923,205 +770,10 @@ void addBook()
 
 void editBook()
 {
-    if (inventory.empty())
-    {
-        std::cout << "Inventory is empty. Nothing to edit.\n";
-        return;
-    }
-
-    int selectedIndex = lookUpBook();
-    if (selectedIndex == -1)
-    {
-        std::cout << "Edit Book cancelled. Returning to Inventory Menu.\n";
-        return;
-    }
-
-    std::size_t index = static_cast<std::size_t>(selectedIndex);
-    bookType &book     = inventory[index];
-
-    BookDraft draft;
-    draft.title        = book.getTitle();
-    draft.isbn         = book.getISBN();
-    draft.author       = book.getAuthor();
-    draft.publisher    = book.getPublisher();
-    draft.dateAdded    = book.getDateAdded();
-    draft.quantity     = book.getQtyOnHand();
-    draft.wholesale    = book.getWholesale();
-    draft.retail       = book.getRetail();
-    draft.titleSet     = true;
-    draft.isbnSet      = true;
-    draft.authorSet    = true;
-    draft.publisherSet = true;
-    draft.dateSet      = true;
-    draft.quantitySet  = true;
-    draft.wholesaleSet = true;
-    draft.retailSet    = true;
-
-    while (true)
-    {
-        std::string subheading = "Editing: " + draft.title;
-        renderBookForm(draft,
-                       "Inventory Database - Edit Book",
-                       subheading,
-                       "Save Changes",
-                       "Cancel Edit");
-
-        std::cout << "\nSelect a field number to edit, 9 to save changes, or 0 to cancel: ";
-
-        std::string choice;
-        if (!std::getline(std::cin, choice))
-        {
-            return;
-        }
-
-        choice = trim(choice);
-        if (choice.empty())
-        {
-            std::cout << "Please select a menu option.\n";
-            pressEnterToContinue();
-            continue;
-        }
-
-        if (choice == "0")
-        {
-            std::cout << "\nEdit Book cancelled. Returning to Inventory Menu.\n";
-            return;
-        }
-
-        if (choice == "9")
-        {
-            if (auto existingIndex = findBookIndexByISBN(draft.isbn))
-            {
-                if (*existingIndex != index)
-                {
-                    std::cout << "Another book already uses this ISBN. Please choose a different ISBN.\n";
-                    pressEnterToContinue();
-                    continue;
-                }
-            }
-
-            book.setTitle(draft.title);
-            book.setISBN(draft.isbn);
-            book.setAuthor(draft.author);
-            book.setPublisher(draft.publisher);
-            book.setDateAdded(draft.dateAdded);
-            book.setQtyOnHand(draft.quantity);
-            book.setWholesale(draft.wholesale);
-            book.setRetail(draft.retail);
-
-            std::cout << "\nBook updated successfully.\n";
-            if (draft.retail < draft.wholesale)
-            {
-                std::cout << "Warning: Retail price is less than wholesale cost.\n";
-            }
-
-            return;
-        }
-
-        int menuSelection = -1;
-        if (!parseNonNegativeInt(choice, menuSelection) ||
-            menuSelection < 1 || menuSelection > 8)
-        {
-            std::cout << "Please choose an option from the menu.\n";
-            pressEnterToContinue();
-            continue;
-        }
-
-        FieldChoice field = static_cast<FieldChoice>(menuSelection);
-        PromptResult result = PromptResult::Success;
-
-        switch (field)
-        {
-            case FieldChoice::Title:
-                result       = promptEditableString(field, draft.title);
-                draft.titleSet = true;
-                break;
-            case FieldChoice::ISBN:
-                result      = promptEditableString(field, draft.isbn);
-                draft.isbnSet = true;
-                break;
-            case FieldChoice::Author:
-                result         = promptEditableString(field, draft.author);
-                draft.authorSet = true;
-                break;
-            case FieldChoice::Publisher:
-                result            = promptEditableString(field, draft.publisher);
-                draft.publisherSet = true;
-                break;
-            case FieldChoice::DateAdded:
-                result       = promptEditableDate(field, draft.dateAdded);
-                draft.dateSet = true;
-                break;
-            case FieldChoice::Quantity:
-                result           = promptEditableQuantity(field, draft.quantity);
-                draft.quantitySet = true;
-                break;
-            case FieldChoice::Wholesale:
-                result            = promptEditableMoney(field, draft.wholesale);
-                draft.wholesaleSet = true;
-                break;
-            case FieldChoice::Retail:
-                result         = promptEditableMoney(field, draft.retail);
-                draft.retailSet = true;
-                break;
-        }
-
-        if (result == PromptResult::Cancel)
-        {
-            std::cout << "\nEdit Book cancelled. Returning to Inventory Menu.\n";
-            return;
-        }
-    }
+    std::cout << "Edit Book is not implemented yet.\n";
 }
 
 void deleteBook()
 {
-    if (inventory.empty())
-    {
-        std::cout << "Inventory is empty. Nothing to delete.\n";
-        return;
-    }
-
-    int selectedIndex = lookUpBook();
-    if (selectedIndex == -1)
-    {
-        std::cout << "Delete Book cancelled. Returning to Inventory Menu.\n";
-        return;
-    }
-
-    std::size_t index = static_cast<std::size_t>(selectedIndex);
-    const bookType &book = inventory[index];
-
-    clearScreen();
-    std::cout << "Serendipity Booksellers\n\n"
-              << "Inventory Database - Delete Book\n\n"
-              << "DATABASE SIZE: " << kMaxInventory << '\n'
-              << "Books in Database: " << bookType::getBookCount() << "\n\n"
-              << "Delete the following book?\n\n"
-              << "Title : " << book.getTitle() << '\n'
-              << "Author: " << book.getAuthor() << '\n'
-              << "ISBN  : " << book.getISBN() << '\n'
-              << "Qty   : " << book.getQtyOnHand() << '\n'
-              << "Retail: " << formatMoney(book.getRetail()) << "\n\n"
-              << "Type Y to confirm deletion (any other key to cancel): ";
-
-    std::string confirmation;
-    if (!std::getline(std::cin, confirmation))
-    {
-        return;
-    }
-
-    captureBufferedInputFromStream();
-
-    std::string lowered = toLowerCopy(trim(confirmation));
-    if (lowered != "y" && lowered != "yes")
-    {
-        std::cout << "\nDelete Book cancelled. Returning to Inventory Menu.\n";
-        return;
-    }
-
-    inventory.erase(inventory.begin() + static_cast<std::ptrdiff_t>(index));
-
-    std::cout << "\nBook deleted successfully. Books in Database: "
-              << inventory.size() << '/' << kMaxInventory << "\n";
+    std::cout << "Delete Book is not implemented yet.\n";
 }
