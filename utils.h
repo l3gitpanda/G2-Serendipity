@@ -9,49 +9,38 @@ CS1B – G2: Serendipity
 
 #ifndef UTILS_H
 #define UTILS_H
-#include <vector>
 #include <iomanip>
-
-using namespace std;
+#include <iostream>
+#include <string>
+#include <vector>
 
 void clearScreen();
-
 void pressEnterToContinue();
 
-struct navigationMenu { // Use struct for reusability
-    string heading;
-    vector<string> options;
-    void print(int optionNumberPadding, int optionLabelMargin) {
-        /*
-        optionNumberPadding:
-            Distance between option number containers and
-            there corresponding label
-        */
-        /*
-        optionLabelMargin:
-            Distance between option label containers and 
-            their corresponding label number
-        */
+struct navigationMenu
+{
+    std::string heading;
+    std::vector<std::string> options;
 
-        cout << right << setw(40) << "SERENDIPITY" << endl << // Print title
-            right << setw(50) << heading << endl;
+    void print(int optionNumberPadding, int optionLabelMargin) const
+    {
+        std::cout << std::right << std::setw(40) << "SERENDIPITY" << std::endl
+                  << std::right << std::setw(50) << heading << std::endl;
 
-        for (size_t i = 0; i < options.size(); i++) { // Print each option
-            cout << right << setw(optionNumberPadding) << i + 1 << "." <<
-                right << setw(optionLabelMargin) << "" << 
-                left << setw(options[i].size()) << options[i] << endl;
+        for (std::size_t i = 0; i < options.size(); ++i)
+        {
+            std::cout << std::right << std::setw(optionNumberPadding) << (i + 1) << "."
+                      << std::right << std::setw(optionLabelMargin) << ""
+                      << std::left << options[i] << std::endl;
         }
     }
 };
 
-#include <string>
-
-// Utility functions moved from invmenu.cpp
 std::string trim(const std::string &value);
 bool parseNonNegativeInt(const std::string &text, int &value);
 bool parseNonNegativeDouble(const std::string &text, double &value);
-bool promptStringField(const std::string &label, std::string &out);
-bool promptNonNegativeIntField(const std::string &label, int &out);
-bool promptNonNegativeDoubleField(const std::string &label, double &out);
+bool isValidDate(const std::string &value);
+std::string toLowerCopy(const std::string &value);
+std::string formatMoney(double value);
 
 #endif // UTILS_H

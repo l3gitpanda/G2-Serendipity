@@ -8,46 +8,56 @@ CS1B – G2: Serendipity
 */
 #ifndef BOOKTYPE_H
 #define BOOKTYPE_H
-#include <iostream>
+#include <iosfwd>
 #include <string>
 
-using namespace std;
-
-class BookType {
+class bookType {
   public:
-    BookType();
-    BookType(const string &bookTitle, const string &isbn, const string &author, const string &publisher,
-        const string &dateAdded, int qtyOnHand, double wholesale, double retail);
+    bookType();
+    bookType(const std::string &isbn, const std::string &title,
+             const std::string &author, const std::string &publisher,
+             const std::string &dateAdded, int qtyOnHand,
+             double wholesale, double retail);
+    bookType(const bookType &other);
+    bookType(bookType &&other) noexcept;
+    bookType &operator=(const bookType &other);
+    bookType &operator=(bookType &&other) noexcept;
+    ~bookType();
 
-    // Getters
-    string getBookTitle() const;
-    string getIsbn() const;
-    string getAuthor() const;
-    string getPublisher() const;
-    string getDateAdded() const;
+    void setISBN(const std::string &isbnValue);
+    void setTitle(const std::string &titleValue);
+    void setAuthor(const std::string &authorValue);
+    void setPublisher(const std::string &publisherValue);
+    void setDateAdded(const std::string &dateValue);
+    void setQtyOnHand(int qtyValue);
+    void setWholesale(double wholesaleValue);
+    void setRetail(double retailValue);
+
+    const std::string &getISBN() const;
+    const std::string &getTitle() const;
+    const std::string &getAuthor() const;
+    const std::string &getPublisher() const;
+    const std::string &getDateAdded() const;
     int getQtyOnHand() const;
     double getWholesale() const;
     double getRetail() const;
 
-    // Setters
-    void setBookTitle(const string &title);
-    void setIsbn(const string &isbn);
-    void setAuthor(const string &author);
-    void setPublisher(const string &publisher);
-    void setDateAdded(const string &date);
-    void setQtyOnHand(int qty);
-    void setWholesale(double wholesale);
-    void setRetail(double retail);
+    static int getBookCount();
+
+    bool equals(const bookType &other) const;
+    void print(std::ostream &os) const;
 
   private:
-    string bookTitle;
-    string isbn;
-    string author;
-    string publisher;
-    string dateAdded;
-    int qtyOnHand{};
-    double wholesale{};
-    double retail{};
+    std::string isbn;
+    std::string title;
+    std::string author;
+    std::string publisher;
+    std::string dateAdded;
+    int qtyOnHand{0};
+    double wholesale{0.0};
+    double retail{0.0};
+
+    static int bookCount;
 };
 
 #endif // BOOKTYPE_H
