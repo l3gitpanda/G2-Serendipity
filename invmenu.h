@@ -8,12 +8,11 @@ CS1B – G2: Serendipity
 */
 
 #ifndef INV_MENU_H
-#define INV_MENU_H 
+#define INV_MENU_H
 
 void invMenu();
 
-
-void lookUpBook();
+int lookUpBook();
 void addBook();
 void editBook();
 void deleteBook();
