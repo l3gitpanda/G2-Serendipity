@@ -19,6 +19,10 @@ class BookType {
     BookType(const string &bookTitle, const string &isbn, const string &author, const string &publisher,
         const string &dateAdded, int qtyOnHand, double wholesale, double retail);
 
+    BookType(const BookType &other);
+    BookType(BookType &&other) noexcept;
+    ~BookType();
+
     // Getters
     string getBookTitle() const;
     string getIsbn() const;
@@ -39,6 +43,8 @@ class BookType {
     void setWholesale(double wholesale);
     void setRetail(double retail);
 
+    static int getBookCount();
+
   private:
     string bookTitle;
     string isbn;
@@ -48,6 +54,8 @@ class BookType {
     int qtyOnHand{};
     double wholesale{};
     double retail{};
+
+    static int bookCount;
 };
 
 #endif // BOOKTYPE_H
