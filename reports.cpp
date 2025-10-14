@@ -15,16 +15,19 @@ using namespace std;
 
 static void printReportsMenu()
 {
-    cout << "Serendipity Booksellers\n\n";
-    cout << "Reports\n\n";
-    cout << "1. Inventory Listing\n";
-    cout << "2. Inventory Wholesale Value\n";
-    cout << "3. Inventory Retail Value\n";
-    cout << "4. Listing by Quantity\n";
-    cout << "5. Listing by Cost\n";
-    cout << "6. Listing by Age\n";
-    cout << "7. Return to the Main Menu\n\n";
-    cout << "Enter Your Choice: ";
+    navigationMenu menu{
+        "Reports",
+        {
+            "Inventory Listing",
+            "Inventory Wholesale Value",
+            "Inventory Retail Value",
+            "Listing by Quantity",
+            "Listing by Cost",
+            "Listing by Age",
+            "Return to the Main Menu"
+        }
+    };
+    menu.print();
 }
 
 void reports()
@@ -34,7 +37,8 @@ void reports()
     while (running)
     {
         clearScreen();
-        printReportsMenu();
+    printReportsMenu();
+    cout << "Enter Your Choice: ";
 
         string input;
         getline(cin, input);
