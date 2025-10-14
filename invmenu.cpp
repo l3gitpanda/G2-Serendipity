@@ -194,24 +194,47 @@ namespace
     {
         clearScreen();
 
-        std::cout << "SERENDIPITY BOOKSELLERS\n\n"
-                  << heading << "\n\n"
-                  << "DATABASE SIZE: " << kMaxInventory
-                  << " CURRENT BOOK COUNT: " << bookType::getBookCount() << "\n\n";
+        // Frame helpers (consistent with menus/cashier/bookinfo)
+        constexpr int FRAME_W = 80;
+        constexpr int INSIDE  = 78;
+        auto border = [&]() { std::cout << std::string(FRAME_W, '-') << '\n'; };
+        auto framed = [&](const std::string &s) {
+            std::string t = s;
+            if ((int)t.size() < INSIDE) t += std::string(INSIDE - (int)t.size(), ' ');
+            else if ((int)t.size() > INSIDE) t = t.substr(0, INSIDE);
+            std::cout << '-' << t << "-\n";
+        };
+        auto blank = [&]() { framed(""); };
+
+        border();
+        framed("SERENDIPITY BOOKSELLERS");
+        blank();
+        framed(heading);
+        blank();
+        {
+            std::ostringstream oss;
+            oss << "DATABASE SIZE: " << kMaxInventory
+                << " CURRENT BOOK COUNT: " << bookType::getBookCount();
+            framed(oss.str());
+        }
+        blank();
 
         if (!statusMessage.empty())
         {
-            std::cout << statusMessage << "\n\n";
+            framed(statusMessage);
+            blank();
         }
 
-        std::cout << "--PENDING VALUES--\n";
+        framed("--PENDING VALUES--");
 
-        auto fieldLine = [](int index, const std::string &label, const std::string &value)
+        auto fieldLine = [&](int index, const std::string &label, const std::string &value)
         {
-            std::ios::fmtflags flags = std::cout.flags();
-            std::cout << ' ' << index << ") " << std::left << std::setw(34) << label
-                      << "-> " << value << '\n';
-            std::cout.flags(flags);
+            std::ostringstream row;
+            std::ios::fmtflags flags = row.flags();
+            row << ' ' << index << ") " << std::left << std::setw(34) << label
+                << "-> " << value;
+            row.flags(flags);
+            framed(row.str());
         };
 
         fieldLine(1, fieldLabel(FieldChoice::Title), draft.titleSet ? draft.title : "--EMPTY--");
@@ -223,9 +246,14 @@ namespace
         fieldLine(7, fieldLabel(FieldChoice::Wholesale), draft.wholesaleSet ? formatMoney(draft.wholesale) : "$0.00");
         fieldLine(8, fieldLabel(FieldChoice::Retail), draft.retailSet ? formatMoney(draft.retail) : "$0.00");
 
-        std::cout << '\n'
-                  << " 9) " << saveOptionLabel << "\n"
-                  << " 0) Return to Inventory Menu\n";
+        blank();
+        {
+            std::ostringstream save;
+            save << ' ' << 9 << ") " << saveOptionLabel;
+            framed(save.str());
+        }
+        framed(" 0) Return to Inventory Menu");
+        border();
     }
 
     PromptResult promptString(const std::string &prompt, std::string &value)
