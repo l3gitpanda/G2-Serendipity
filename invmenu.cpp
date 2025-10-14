@@ -697,6 +697,7 @@ void invMenu()
                 deleteBook();
                 break;
             case '0':
+                pressEnterToContinue();
                 running = false;
                 break;
         }

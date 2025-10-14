@@ -82,6 +82,7 @@ void reports()
                 pressEnterToContinue();
                 break;
             case '0':
+                pressEnterToContinue();
                 running = false;
                 break;
         }
