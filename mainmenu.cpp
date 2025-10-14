@@ -22,12 +22,11 @@ void printMainMenu() {
         {
             "Cashier Module",
             "Inventory Database Module",
-            "Report Module",
-            "Exit"
+            "Report Module"
         }
     ); // Initialize main menu
 
-    mainMenu.print(); // Print main menu
+    mainMenu.printWithBack("Exit"); // 0 exits
 }
 
 int main() {
@@ -40,7 +39,7 @@ int main() {
 
         char choice;
 
-        cout << "Choose and option: ";
+        cout << "Choose an option: ";
 
         cin.get(choice); // Ensure choice is a char
 
@@ -57,7 +56,7 @@ int main() {
                 pressEnterToContinue();
                 reports();
             break;
-            case '4':
+            case '0':
                 pressEnterToContinue();
                 loopShouldEnd = true; // end loop
                 return 0;

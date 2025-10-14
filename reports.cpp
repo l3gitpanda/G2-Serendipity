@@ -23,11 +23,10 @@ static void printReportsMenu()
             "Inventory Retail Value",
             "Listing by Quantity",
             "Listing by Cost",
-            "Listing by Age",
-            "Return to the Main Menu"
+            "Listing by Age"
         }
     };
-    menu.print();
+    menu.printWithBack("Return to Main Menu");
 }
 
 void reports()
@@ -43,9 +42,9 @@ void reports()
         string input;
         getline(cin, input);
 
-        if (input.size() != 1 || input[0] < '1' || input[0] > '7')
+        if (input.size() != 1 || (input[0] != '0' && (input[0] < '1' || input[0] > '6')))
         {
-            cout << "\nPlease enter a number in the range 1 - 7.\n";
+            cout << "\nPlease enter 0 or a number in the range 1 - 6.\n";
             pressEnterToContinue();
             continue;
         }
@@ -82,7 +81,7 @@ void reports()
                 repAge();
                 pressEnterToContinue();
                 break;
-            case '7':
+            case '0':
                 running = false;
                 break;
         }

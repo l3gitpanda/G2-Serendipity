@@ -491,16 +491,14 @@ namespace
 
             navigationMenu header{
                 "Inventory Database - Search Results",
-                {
-                    "Return to Inventory Menu"
-                }
+                {}
             };
             std::cout << "DATABASE SIZE: " << kMaxInventory << '\n'
                       << "Books in Database: " << bookType::getBookCount() << "\n\n"
                       << "Results for "
                       << ((type == SearchType::Title) ? "Title" : "ISBN")
                       << " \"" << query << "\"\n\n";
-            header.print();
+            header.printWithBack("Return to Inventory Menu");
 
             for (std::size_t i = 0; i < matches.size(); ++i)
             {
@@ -512,8 +510,7 @@ namespace
                           << " — " << formatMoney(book.getRetail()) << '\n';
             }
 
-            std::cout << "\n0) Cancel and return to Inventory Menu\n"
-                      << "Select # to view details: ";
+            std::cout << "Select # to view details (0 to return): ";
 
             std::string input;
             if (!std::getline(std::cin, input))
@@ -594,12 +591,11 @@ namespace
             navigationMenu optionsMenu{
                 "Duplicate ISBN Options",
                 {
-                    "Cancel add and return to Inventory Menu",
                     "Edit fields before saving",
                     "Increase quantity on existing record"
                 }
             };
-            optionsMenu.print();
+            optionsMenu.printWithBack("Cancel add and return to Inventory Menu");
             std::cout << "Choice: ";
 
             std::string input;
@@ -609,11 +605,6 @@ namespace
             }
 
             input = trim(input);
-            if (input == "1")
-            {
-                return DuplicateResolution::CancelAdd;
-            }
-
             if (input == "2")
             {
                 return DuplicateResolution::EditFields;
@@ -629,7 +620,12 @@ namespace
                 return DuplicateResolution::CompletedAdd;
             }
 
-            std::cout << "Please enter 1, 2, or 3.\n";
+            if (input == "0")
+            {
+                return DuplicateResolution::CancelAdd;
+            }
+
+            std::cout << "Please enter 0, 2, or 3.\n";
             pressEnterToContinue();
         }
     }
@@ -643,11 +639,10 @@ static void printInvMenu()
             "Look Up Book",
             "Add Book",
             "Edit Book",
-            "Delete Book",
-            "Return to Main Menu"
+            "Delete Book"
         }
     };
-    menu.print();
+    menu.printWithBack("Return to Main Menu");
 }
 
 void invMenu()
@@ -723,15 +718,14 @@ int lookUpBook()
             "Inventory Database - Look Up Book",
             {
                 "Search by Title",
-                "Search by ISBN",
-                "Return to Inventory Menu"
+                "Search by ISBN"
             }
         };
         // Optional context above or below the menu
         std::cout << "DATABASE SIZE: " << kMaxInventory << '\n'
                   << "Books in Database: " << bookType::getBookCount() << "\n\n";
-        menu.print();
-        std::cout << "Choice: ";
+    menu.printWithBack("Return to Inventory Menu");
+    std::cout << "Choice: ";
 
         std::string modeInput;
         if (!std::getline(std::cin, modeInput))
@@ -740,7 +734,7 @@ int lookUpBook()
         }
 
         modeInput = trim(modeInput);
-        if (modeInput.empty() || modeInput == "3")
+        if (modeInput.empty() || modeInput == "0")
         {
             std::cout << "Look Up Book cancelled.\n";
             return -1;
@@ -757,7 +751,7 @@ int lookUpBook()
         }
         else
         {
-            std::cout << "\nPlease enter 1, 2, or 3.\n";
+            std::cout << "\nPlease enter 0, 1, or 2.\n";
             pressEnterToContinue();
             continue;
         }
