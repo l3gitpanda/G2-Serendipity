@@ -16,19 +16,13 @@ CS1B – G2: Serendipity
 void bookInfo(const bookType &book)
 {
     clearScreen();
+  // Consistent simple header without navigationMenu
+  std::cout << "Serendipity Booksellers\n\n"
+        << "Book Information\n"
+        << std::string(16, '-') << "\n\n";
 
-    std::cout << "Serendipity Booksellers\n\n"
-              << "Book Information\n"
-              << "----------------\n\n";
-
-    std::cout << "ISBN:             " << book.getISBN() << '\n'
-              << "Title:            " << book.getTitle() << '\n'
-              << "Author:           " << book.getAuthor() << '\n'
-              << "Publisher:        " << book.getPublisher() << '\n'
-              << "Date Added:       " << book.getDateAdded() << '\n'
-              << "Quantity on Hand: " << book.getQtyOnHand() << '\n'
-              << "Wholesale Cost:   " << formatMoney(book.getWholesale()) << '\n'
-              << "Retail Price:     " << formatMoney(book.getRetail()) << '\n';
+  // Delegate consistent field formatting to bookType::print
+  book.print(std::cout);
 
     pressEnterToContinue();
 }

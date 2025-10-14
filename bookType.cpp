@@ -7,6 +7,7 @@ CS1B – G2: Serendipity
   Build:   g++ -std=c++20 -Werror mainmenu.cpp utils.cpp invmenu.cpp reports.cpp bookType.cpp cashier.cpp bookinfo.cpp -o serendipity.out
 */
 #include "bookType.h"
+#include "utils.h"
 
 #include <iomanip>
 #include <iostream>
@@ -114,18 +115,28 @@ bool bookType::equals(const bookType &other) const
 
 void bookType::print(std::ostream &os) const
 {
-  std::ostream::fmtflags flags = os.flags();
+  // Consistent aligned labels and money formatting
+  std::ios::fmtflags flags = os.flags();
   std::streamsize precision = os.precision();
 
-  os << "ISBN: " << isbn << '\n'
-     << "Title: " << title << '\n'
-     << "Author: " << author << '\n'
-     << "Publisher: " << publisher << '\n'
-     << "Date Added: " << dateAdded << '\n'
-     << "Quantity on Hand: " << qtyOnHand << '\n'
-     << std::fixed << std::setprecision(2)
-     << "Wholesale Cost: $" << wholesale << '\n'
-     << "Retail Price: $" << retail << '\n';
+  auto line = [&](const std::string &label, const std::string &value) {
+    std::ios::fmtflags f = os.flags();
+    os << std::left << std::setw(18) << (label + ":") << value << '\n';
+    os.flags(f);
+  };
+
+  line("ISBN", isbn);
+  line("Title", title);
+  line("Author", author);
+  line("Publisher", publisher);
+  line("Date Added", dateAdded);
+  {
+    std::ios::fmtflags f = os.flags();
+    os << std::left << std::setw(18) << "Quantity on Hand:" << qtyOnHand << '\n';
+    os.flags(f);
+  }
+  line("Wholesale Cost", formatMoney(wholesale));
+  line("Retail Price", formatMoney(retail));
 
   os.flags(flags);
   os.precision(precision);
