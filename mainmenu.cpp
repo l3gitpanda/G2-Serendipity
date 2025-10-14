@@ -27,7 +27,7 @@ void printMainMenu() {
         }
     ); // Initialize main menu
 
-    mainMenu.print(12, 5); // Print main menu
+    mainMenu.print(); // Print main menu
 }
 
 int main() {

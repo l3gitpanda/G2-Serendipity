@@ -22,17 +22,31 @@ struct navigationMenu
     std::string heading;
     std::vector<std::string> options;
 
-    void print(int optionNumberPadding, int optionLabelMargin) const
+    void print() const
     {
-        std::cout << std::right << std::setw(40) << "SERENDIPITY" << std::endl
-                  << std::right << std::setw(50) << heading << std::endl;
+        constexpr int FRAME_W = 80;
+        constexpr int INSIDE = 78;
+        auto border = []() { std::cout << std::string(FRAME_W, '-') << '\n'; };
+        auto framed = [](const std::string& s) {
+            std::string t = s;
+            if ((int)t.size() < INSIDE) t += std::string(INSIDE - (int)t.size(), ' ');
+            else if ((int)t.size() > INSIDE) t = t.substr(0, INSIDE);
+            std::cout << '-' << t << "-\n";
+        };
+        auto blank = [&]() { framed(""); };
+
+        border();
+        framed("SERENDIPITY");
+        blank();
+        framed(heading);
+        blank();
 
         for (std::size_t i = 0; i < options.size(); ++i)
         {
-            std::cout << std::right << std::setw(optionNumberPadding) << (i + 1) << "."
-                      << std::right << std::setw(optionLabelMargin) << ""
-                      << std::left << options[i] << std::endl;
+            std::string opt = std::to_string(i + 1) + ". " + options[i];
+            framed(opt);
         }
+        border();
     }
 };
 
