@@ -461,13 +461,18 @@ namespace
         {
             clearScreen();
 
-            std::cout << "Serendipity Booksellers\n\n"
-                      << "Inventory Database - Search Results\n\n"
-                      << "DATABASE SIZE: " << kMaxInventory << '\n'
+            navigationMenu header{
+                "Inventory Database - Search Results",
+                {
+                    "Return to Inventory Menu"
+                }
+            };
+            std::cout << "DATABASE SIZE: " << kMaxInventory << '\n'
                       << "Books in Database: " << bookType::getBookCount() << "\n\n"
                       << "Results for "
                       << ((type == SearchType::Title) ? "Title" : "ISBN")
                       << " \"" << query << "\"\n\n";
+            header.print();
 
             for (std::size_t i = 0; i < matches.size(); ++i)
             {
@@ -556,12 +561,18 @@ namespace
                       << "Author: " << existing.getAuthor() << '\n'
                       << "ISBN  : " << existing.getISBN() << '\n'
                       << "Qty   : " << existing.getQtyOnHand() << '\n'
-                      << "Retail: " << formatMoney(existing.getRetail()) << "\n\n"
-                      << "Options:\n"
-                      << " 1) Cancel add and return to Inventory Menu\n"
-                      << " 2) Edit fields before saving\n"
-                      << " 3) Increase quantity on existing record\n\n"
-                      << "Choice: ";
+                      << "Retail: " << formatMoney(existing.getRetail()) << "\n\n";
+
+            navigationMenu optionsMenu{
+                "Duplicate ISBN Options",
+                {
+                    "Cancel add and return to Inventory Menu",
+                    "Edit fields before saving",
+                    "Increase quantity on existing record"
+                }
+            };
+            optionsMenu.print();
+            std::cout << "Choice: ";
 
             std::string input;
             if (!std::getline(std::cin, input))
@@ -598,14 +609,17 @@ namespace
 
 static void printInvMenu()
 {
-    std::cout << "Serendipity Booksellers\n\n"
-              << "Inventory Menu\n\n"
-              << "1) Look Up Book\n"
-              << "2) Add Book\n"
-              << "3) Edit Book\n"
-              << "4) Delete Book\n"
-              << "0) Return to Main Menu\n\n"
-              << "Choice: ";
+    navigationMenu menu{
+        "Inventory Menu",
+        {
+            "Look Up Book",
+            "Add Book",
+            "Edit Book",
+            "Delete Book",
+            "Return to Main Menu"
+        }
+    };
+    menu.print();
 }
 
 void invMenu()
@@ -616,7 +630,8 @@ void invMenu()
     while (running)
     {
         clearScreen();
-        printInvMenu();
+    printInvMenu();
+    std::cout << "Choice: ";
 
         std::string input;
         if (!std::getline(std::cin, input))
@@ -675,15 +690,20 @@ int lookUpBook()
     while (true)
     {
         clearScreen();
-        std::cout << "Serendipity Booksellers\n\n"
-                  << "Inventory Database - Look Up Book\n\n"
-                  << "DATABASE SIZE: " << kMaxInventory << '\n'
-                  << "Books in Database: " << bookType::getBookCount() << "\n\n"
-                  << "Search by:\n"
-                  << " 1) Title\n"
-                  << " 2) ISBN\n"
-                  << " 0) Return to Inventory Menu\n\n"
-                  << "Choice: ";
+        // Print submenu using navigationMenu with borders
+        navigationMenu menu{
+            "Inventory Database - Look Up Book",
+            {
+                "Search by Title",
+                "Search by ISBN",
+                "Return to Inventory Menu"
+            }
+        };
+        // Optional context above or below the menu
+        std::cout << "DATABASE SIZE: " << kMaxInventory << '\n'
+                  << "Books in Database: " << bookType::getBookCount() << "\n\n";
+        menu.print();
+        std::cout << "Choice: ";
 
         std::string modeInput;
         if (!std::getline(std::cin, modeInput))
@@ -692,7 +712,7 @@ int lookUpBook()
         }
 
         modeInput = trim(modeInput);
-        if (modeInput.empty() || modeInput == "0")
+        if (modeInput.empty() || modeInput == "3")
         {
             std::cout << "Look Up Book cancelled.\n";
             return -1;
@@ -709,7 +729,7 @@ int lookUpBook()
         }
         else
         {
-            std::cout << "\nPlease enter 0, 1, or 2.\n";
+            std::cout << "\nPlease enter 1, 2, or 3.\n";
             pressEnterToContinue();
             continue;
         }
