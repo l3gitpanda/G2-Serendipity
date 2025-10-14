@@ -460,7 +460,8 @@ namespace
     std::vector<int> searchInventory(const std::string &query, SearchType type)
     {
         std::vector<int> matches;
-        std::string needle = toLowerCopy(trim(query));
+        // Preserve spaces in the query so a single space matches titles with spaces.
+        std::string needle = toLowerCopy(query);
         if (needle.empty())
         {
             return matches;
@@ -765,7 +766,7 @@ int lookUpBook()
             return -1;
         }
 
-        query = trim(query);
+        // Do NOT trim here: allow a single space (" ") to search for titles containing spaces.
         if (query.empty())
         {
             std::cout << "Look Up Book cancelled.\n";
