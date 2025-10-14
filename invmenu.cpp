@@ -750,14 +750,13 @@ void addBook()
 {
     ensureInventoryCapacity();
 
-    if (inventory.size() >= kMaxInventory)
-    {
-        std::cout << "Inventory full (20/20). Cannot add more books.\n";
-        return;
-    }
-
     BookDraft draft;
-    std::string statusMessage = "Select a field number to enter information. Leave a field blank while editing to cancel that entry.";
+    std::string statusMessage =
+        (inventory.size() >= kMaxInventory)
+            ? "Inventory full (" + std::to_string(kMaxInventory) + "/" +
+                  std::to_string(kMaxInventory) +
+                  ". You may review fields, but saving is disabled until space is available."
+            : "Select a field number to enter information. Leave a field blank while editing to cancel that entry.";
 
     while (true)
     {
@@ -793,7 +792,8 @@ void addBook()
 
             if (inventory.size() >= kMaxInventory)
             {
-                statusMessage = "Inventory full (20/20). Cannot add more books.";
+                statusMessage = "Inventory full (" + std::to_string(kMaxInventory) + "/" +
+                                std::to_string(kMaxInventory) + ". Cannot add more books.";
                 continue;
             }
 
@@ -830,7 +830,9 @@ void addBook()
             }
             else if (inventory.size() >= kMaxInventory)
             {
-                statusMessage = "Book added. Inventory is now full (20/20).";
+                statusMessage = "Book added. Inventory is now full (" +
+                                std::to_string(kMaxInventory) + "/" +
+                                std::to_string(kMaxInventory) + ").";
             }
             else
             {
