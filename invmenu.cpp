@@ -822,6 +822,7 @@ void addBook()
         if (choice == "0")
         {
             std::cout << "\nReturning to Inventory Menu.\n";
+            pressEnterToContinue();
             return;
         }
 
@@ -846,6 +847,7 @@ void addBook()
                 {
                     case DuplicateResolution::CancelAdd:
                         std::cout << "\nAdd Book cancelled. Returning to Inventory Menu.\n";
+                        pressEnterToContinue();
                         return;
                     case DuplicateResolution::EditFields:
                         statusMessage = "Duplicate ISBN. Update fields before saving.";
