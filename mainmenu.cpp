@@ -26,7 +26,7 @@ void printMainMenu() {
         }
     ); // Initialize main menu
 
-    mainMenu.printWithBack("Exit"); // 0 exits
+    mainMenu.printWithBack("Exit");
 }
 
 int main() {
@@ -37,33 +37,43 @@ int main() {
 
         printMainMenu();
 
-        char choice;
+        std::string input;
 
         cout << "Choose an option: ";
+        if (!std::getline(cin, input)) {
+            return 0;
+        }
 
-        cin.get(choice); // Ensure choice is a char
+        input = trim(input);
+        int selection = -1;
+        if (!parseNonNegativeInt(input, selection))
+        {
+            cout << endl << "Invalid input, please try again" << endl;
+            pressEnterToContinue();
+            continue;
+        }
 
-        switch (choice) {
-            case '1':
+        const int returnIndex = 3 + 1; // 3 menu items + return
+        if (selection == returnIndex)
+        {
+            pressEnterToContinue();
+            return 0;
+        }
+
+        switch (selection) {
+            case 1:
                 pressEnterToContinue();
                 cashier();
             break;
-            case '2':
+            case 2:
                 pressEnterToContinue();
                 invMenu();
             break;
-            case '3':
+            case 3:
                 pressEnterToContinue();
                 reports();
             break;
-            case '0':
-                pressEnterToContinue();
-                loopShouldEnd = true; // end loop
-                return 0;
-            break;
             default:
-                // Choice is invalid
-                // Set choice to invalid so that loops runs again
                 cout << endl << "Invalid input, please try again" << endl;
                 pressEnterToContinue();
             break;

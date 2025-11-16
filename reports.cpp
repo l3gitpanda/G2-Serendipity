@@ -42,48 +42,58 @@ void reports()
         string input;
         getline(cin, input);
 
-        if (input.size() != 1 || (input[0] != '0' && (input[0] < '1' || input[0] > '6')))
+        input = trim(input);
+        int selection = -1;
+        if (!parseNonNegativeInt(input, selection))
         {
-            cout << "\nPlease enter 0 or a number in the range 1 - 6.\n";
+            cout << "\nPlease enter a number in the range 1 - 7.\n";
             pressEnterToContinue();
             continue;
         }
 
-        switch (input[0])
+        const int returnIndex = 6 + 1; // 6 options + return
+        if (selection == returnIndex)
         {
-            case '1':
+            pressEnterToContinue();
+            running = false;
+            continue;
+        }
+
+        switch (selection)
+        {
+            case 1:
                 clearScreen();
                 repListing();
                 pressEnterToContinue();
                 break;
-            case '2':
+            case 2:
                 clearScreen();
                 repWholesale();
                 pressEnterToContinue();
                 break;
-            case '3':
+            case 3:
                 clearScreen();
                 repRetail();
                 pressEnterToContinue();
                 break;
-            case '4':
+            case 4:
                 clearScreen();
                 repQty();
                 pressEnterToContinue();
                 break;
-            case '5':
+            case 5:
                 clearScreen();
                 repCost();
                 pressEnterToContinue();
                 break;
-            case '6':
+            case 6:
                 clearScreen();
                 repAge();
                 pressEnterToContinue();
                 break;
-            case '0':
+            default:
+                cout << "\nPlease enter a number in the range 1 - 7.\n";
                 pressEnterToContinue();
-                running = false;
                 break;
         }
     }

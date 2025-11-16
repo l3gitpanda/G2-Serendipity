@@ -252,7 +252,13 @@ namespace
             save << ' ' << 9 << ") " << saveOptionLabel;
             framed(save.str());
         }
-        framed(" 0) Return to Inventory Menu");
+        // Return option should be the last (highest) number
+        const int returnIndex = 9 + 1; // fields 1-8, 9=Save, 10=Return
+        {
+            std::ostringstream ret;
+            ret << ' ' << returnIndex << ") Return to Inventory Menu";
+            framed(ret.str());
+        }
         border();
     }
 
@@ -511,7 +517,8 @@ namespace
                           << " — " << formatMoney(book.getRetail()) << '\n';
             }
 
-            std::cout << "Select # to view details (0 to return): ";
+            const int returnIndex = static_cast<int>(matches.size()) + 1;
+            std::cout << "Select # to view details (" << returnIndex << " to return): ";
 
             std::string input;
             if (!std::getline(std::cin, input))
@@ -535,7 +542,7 @@ namespace
                 continue;
             }
 
-            if (selection == 0)
+            if (selection == returnIndex)
             {
                 return -1;
             }
@@ -606,12 +613,21 @@ namespace
             }
 
             input = trim(input);
-            if (input == "2")
+            int selection = -1;
+            if (!parseNonNegativeInt(input, selection))
+            {
+                std::cout << "Please enter 1, 2, or 3.\n";
+                pressEnterToContinue();
+                continue;
+            }
+
+            // Options: 1) Edit fields, 2) Increase quantity, 3) Cancel add (return)
+            if (selection == 1)
             {
                 return DuplicateResolution::EditFields;
             }
 
-            if (input == "3")
+            if (selection == 2)
             {
                 inventory[existingIndex].setQtyOnHand(existing.getQtyOnHand() + draft.quantity);
 
@@ -621,12 +637,12 @@ namespace
                 return DuplicateResolution::CompletedAdd;
             }
 
-            if (input == "0")
+            if (selection == 3)
             {
                 return DuplicateResolution::CancelAdd;
             }
 
-            std::cout << "Please enter 0, 2, or 3.\n";
+            std::cout << "Please enter 1, 2, or 3.\n";
             pressEnterToContinue();
         }
     }
@@ -654,8 +670,8 @@ void invMenu()
     while (running)
     {
         clearScreen();
-    printInvMenu();
-    std::cout << "Choice: ";
+        printInvMenu();
+        std::cout << "Choice: ";
 
         std::string input;
         if (!std::getline(std::cin, input))
@@ -664,17 +680,32 @@ void invMenu()
         }
 
         input = trim(input);
-        if (input.size() != 1 ||
-            (input[0] != '0' && input[0] != '1' && input[0] != '2' && input[0] != '3' && input[0] != '4'))
+        int selection = -1;
+        if (!parseNonNegativeInt(input, selection))
         {
-            std::cout << "\nPlease enter 0, 1, 2, 3, or 4.\n";
+            std::cout << "\nPlease enter 1, 2, 3, 4, or 5.\n";
             pressEnterToContinue();
             continue;
         }
 
-        switch (input[0])
+        const int returnIndex = 4 + 1; // 4 menu items + return
+        if (selection < 1 || selection > returnIndex)
         {
-            case '1':
+            std::cout << "\nPlease enter 1, 2, 3, 4, or 5.\n";
+            pressEnterToContinue();
+            continue;
+        }
+
+        if (selection == returnIndex)
+        {
+            pressEnterToContinue();
+            running = false;
+            continue;
+        }
+
+        switch (selection)
+        {
+            case 1:
             {
                 clearScreen();
                 int selectedIndex = lookUpBook();
@@ -684,21 +715,17 @@ void invMenu()
                 }
                 break;
             }
-            case '2':
+            case 2:
                 clearScreen();
                 addBook();
                 break;
-            case '3':
+            case 3:
                 clearScreen();
                 editBook();
                 break;
-            case '4':
+            case 4:
                 clearScreen();
                 deleteBook();
-                break;
-            case '0':
-                pressEnterToContinue();
-                running = false;
                 break;
         }
     }
@@ -736,24 +763,32 @@ int lookUpBook()
         }
 
         modeInput = trim(modeInput);
-        if (modeInput.empty() || modeInput == "0")
+        int selection = -1;
+        if (!parseNonNegativeInt(modeInput, selection))
+        {
+            std::cout << "\nPlease enter 1, 2, or 3.\n";
+            pressEnterToContinue();
+            continue;
+        }
+
+        const int returnIndex = 2 + 1; // 2 options + return
+        SearchType mode;
+        if (selection == returnIndex)
         {
             std::cout << "Look Up Book cancelled.\n";
             return -1;
         }
-
-        SearchType mode;
-        if (modeInput == "1")
+        else if (selection == 1)
         {
             mode = SearchType::Title;
         }
-        else if (modeInput == "2")
+        else if (selection == 2)
         {
             mode = SearchType::ISBN;
         }
         else
         {
-            std::cout << "\nPlease enter 0, 1, or 2.\n";
+            std::cout << "\nPlease enter 1, 2, or 3.\n";
             pressEnterToContinue();
             continue;
         }
@@ -810,7 +845,8 @@ void addBook()
     while (true)
     {
         renderBookForm(draft, statusMessage, "ADD BOOK", "Save Book to Database");
-        std::cout << "\nChoice (0-9): ";
+        const int returnIndex = 9 + 1; // 9=Save, 10=Return
+        std::cout << "\nChoice (1-" << returnIndex << "): ";
 
         std::string choice;
         if (!std::getline(std::cin, choice))
@@ -825,14 +861,21 @@ void addBook()
             continue;
         }
 
-        if (choice == "0")
+        int selection = -1;
+        if (!parseNonNegativeInt(choice, selection))
+        {
+            statusMessage = "Please choose an option from the menu.";
+            continue;
+        }
+
+        if (selection == returnIndex)
         {
             std::cout << "\nReturning to Inventory Menu.\n";
             pressEnterToContinue();
             return;
         }
 
-        if (choice == "9")
+        if (selection == 9)
         {
             if (!draft.isComplete())
             {
@@ -843,7 +886,7 @@ void addBook()
             if (inventory.size() >= kMaxInventory)
             {
                 statusMessage = "Inventory full (" + std::to_string(kMaxInventory) + "/" +
-                                std::to_string(kMaxInventory) + ". Cannot add more books.";
+                                std::to_string(kMaxInventory) + "). Cannot add more books.";
                 continue;
             }
 
@@ -899,22 +942,20 @@ void addBook()
             continue;
         }
 
-        int menuSelection = -1;
-        if (!parseNonNegativeInt(choice, menuSelection) ||
-            menuSelection < 1 || menuSelection > 8)
+        if (selection < 1 || selection > 8)
         {
             statusMessage = "Please choose an option from the menu.";
             continue;
         }
 
-        PromptResult result = promptForField(static_cast<FieldChoice>(menuSelection), draft);
+        PromptResult result = promptForField(static_cast<FieldChoice>(selection), draft);
         if (result == PromptResult::Cancel)
         {
             statusMessage = "Entry cancelled.";
         }
         else
         {
-            statusMessage = fieldName(static_cast<FieldChoice>(menuSelection)) + " saved.";
+            statusMessage = fieldName(static_cast<FieldChoice>(selection)) + " saved.";
         }
     }
 }
@@ -941,7 +982,8 @@ void editBook()
     while (true)
     {
         renderBookForm(draft, statusMessage, "EDIT BOOK", "Save Changes");
-        std::cout << "\nChoice (0-9): ";
+        const int returnIndex = 9 + 1; // 9=Save, 10=Return
+        std::cout << "\nChoice (1-" << returnIndex << "): ";
 
         std::string choice;
         if (!std::getline(std::cin, choice))
@@ -956,14 +998,21 @@ void editBook()
             continue;
         }
 
-        if (choice == "0")
+        int selection = -1;
+        if (!parseNonNegativeInt(choice, selection))
+        {
+            statusMessage = "Please choose an option from the menu.";
+            continue;
+        }
+
+        if (selection == returnIndex)
         {
             std::cout << "\nEdit Book cancelled. Returning to Inventory Menu.\n";
             pressEnterToContinue();
             return;
         }
 
-        if (choice == "9")
+        if (selection == 9)
         {
             if (!draft.isComplete())
             {
@@ -998,21 +1047,20 @@ void editBook()
             return;
         }
 
-        int menuSelection = -1;
-        if (!parseNonNegativeInt(choice, menuSelection) || menuSelection < 1 || menuSelection > 8)
+        if (selection < 1 || selection > 8)
         {
             statusMessage = "Please choose an option from the menu.";
             continue;
         }
 
-        PromptResult result = promptForField(static_cast<FieldChoice>(menuSelection), draft);
+        PromptResult result = promptForField(static_cast<FieldChoice>(selection), draft);
         if (result == PromptResult::Cancel)
         {
             statusMessage = "Entry cancelled.";
         }
         else
         {
-            statusMessage = fieldName(static_cast<FieldChoice>(menuSelection)) + " saved.";
+            statusMessage = fieldName(static_cast<FieldChoice>(selection)) + " saved.";
         }
     }
 }
