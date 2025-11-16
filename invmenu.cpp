@@ -794,13 +794,18 @@ void addBook()
 {
     ensureInventoryCapacity();
 
+    // If the inventory is already at capacity, immediately return to the
+    // inventory menu instead of allowing the user to attempt to add more.
+    if (inventory.size() >= kMaxInventory)
+    {
+        std::cout << "Inventory is full (" << kMaxInventory << "/" << kMaxInventory
+                  << "). Cannot add new books. Returning to Inventory Menu.\n";
+        pressEnterToContinue();
+        return;
+    }
+
     BookDraft draft;
-    std::string statusMessage =
-        (inventory.size() >= kMaxInventory)
-            ? "Inventory full (" + std::to_string(kMaxInventory) + "/" +
-                  std::to_string(kMaxInventory) +
-                  ". You may review fields, but saving is disabled until space is available."
-            : "Select a field number to enter information. Leave a field blank while editing to cancel that entry.";
+    std::string statusMessage = "Select a field number to enter information. Leave a field blank while editing to cancel that entry.";
 
     while (true)
     {
@@ -870,21 +875,26 @@ void addBook()
                 draft.wholesale,
                 draft.retail);
 
+            // If retail is less than wholesale, warn the user but still add.
             if (draft.retail < draft.wholesale)
             {
-                statusMessage = "Book added to database. Warning: Retail price is less than wholesale cost.";
-            }
-            else if (inventory.size() >= kMaxInventory)
-            {
-                statusMessage = "Book added. Inventory is now full (" +
-                                std::to_string(kMaxInventory) + "/" +
-                                std::to_string(kMaxInventory) + ").";
-            }
-            else
-            {
-                statusMessage = "Book added to database.";
+                std::cout << "Book added to database. Warning: Retail price is less than wholesale cost." << '\n';
+                pressEnterToContinue();
             }
 
+            // If adding this book filled the inventory to capacity, return to
+            // the Inventory Menu immediately instead of allowing another add.
+            if (inventory.size() >= kMaxInventory)
+            {
+                std::cout << "Book added. Inventory is now full (" << kMaxInventory << "/" << kMaxInventory
+                          << "). Returning to Inventory Menu." << '\n';
+                pressEnterToContinue();
+                return;
+            }
+
+            // Normal successful add: notify and reset draft for another add.
+            std::cout << "Book added to database." << '\n';
+            pressEnterToContinue();
             draft = BookDraft{};
             continue;
         }
