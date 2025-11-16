@@ -7,6 +7,11 @@ CS1B – Serendipity
   Build:   g++ -std=c++20 -Werror mainmenu.cpp utils.cpp invmenu.cpp reports.cpp bookType.cpp cashier.cpp bookinfo.cpp -o serendipity.out
 */
 
+/**
+ * @file utils.h
+ * @brief Utility helpers used across the Serendipity application.
+ */
+
 #ifndef UTILS_H
 #define UTILS_H
 #include <iomanip>
@@ -14,14 +19,36 @@ CS1B – Serendipity
 #include <string>
 #include <vector>
 
+/**
+ * @brief Clear the terminal screen (best-effort).
+ * @post The terminal screen will be cleared if supported by the environment.
+ */
 void clearScreen();
+
+/**
+ * @brief Pause execution until the user presses Enter.
+ * @post Returns after a newline is read from stdin.
+ */
 void pressEnterToContinue();
 
+/**
+ * @brief Simple framed navigation menu helper used for console UI.
+ *
+ * Example usage:
+ * @code
+ * navigationMenu m{"Main Menu", {"Option A","Option B"}};
+ * m.print();
+ * @endcode
+ */
 struct navigationMenu
 {
     std::string heading;
     std::vector<std::string> options;
 
+    /**
+     * @brief Print the menu with a fixed-width frame.
+     * @note Uses `std::cout` directly.
+     */
     void print() const
     {
         constexpr int FRAME_W = 80;
@@ -49,6 +76,10 @@ struct navigationMenu
         border();
     }
 
+    /**
+     * @brief Print the menu and include a "0. Return" line at the bottom.
+     * @param backLabel Label text for the zero/return option.
+     */
     void printWithBack(const std::string &backLabel = "Return to Previous Menu") const
     {
         constexpr int FRAME_W = 80;
@@ -81,11 +112,48 @@ struct navigationMenu
     }
 };
 
+/**
+ * @brief Trim leading/trailing whitespace from a string.
+ * @param value Input string to trim.
+ * @return New string with leading and trailing whitespace removed.
+ */
 std::string trim(const std::string &value);
+
+/**
+ * @brief Parse a non-negative integer from text.
+ * @param text Text to parse.
+ * @param value Output reference set on success.
+ * @return true if parsing succeeded and `value >= 0`.
+ */
 bool parseNonNegativeInt(const std::string &text, int &value);
+
+/**
+ * @brief Parse a non-negative double from text.
+ * @param text Text to parse.
+ * @param value Output reference set on success.
+ * @return true if parsing succeeded and `value >= 0.0`.
+ */
 bool parseNonNegativeDouble(const std::string &text, double &value);
+
+/**
+ * @brief Rudimentary date validation for the project's date format.
+ * @param value Date string to validate.
+ * @return true if the value looks like a valid date for the project.
+ */
 bool isValidDate(const std::string &value);
+
+/**
+ * @brief Return a lower-cased copy of the input string.
+ * @param value Input string.
+ * @return Lower-cased copy of `value`.
+ */
 std::string toLowerCopy(const std::string &value);
+
+/**
+ * @brief Format a monetary value to a string with two decimal places.
+ * @param value Numeric monetary amount.
+ * @return Formatted money string (e.g., "12.34").
+ */
 std::string formatMoney(double value);
 
 #endif // UTILS_H

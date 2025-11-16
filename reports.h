@@ -8,16 +8,60 @@ CS1B – G2: Serendipity
 */
 
 
+/**
+ * @file reports.h
+ * @brief Reporting utilities: generate various inventory reports.
+ */
+
 #ifndef REPORTS_H
 #define REPORTS_H
 
+/**
+ * @brief Entry point for the reports menu.
+ * @post Control returns to the caller after the selected report is displayed.
+ */
 void reports();
 
+/**
+ * @brief Print a full listing of books in inventory.
+ * @pre Inventory should be loaded.
+ * @post The listing is printed to stdout or configured output.
+ */
 void repListing();
+
+/**
+ * @brief Print a wholesale-cost report.
+ * @pre Inventory should be loaded.
+ * @post Wholesale cost information printed, suitable for accounting.
+ */
 void repWholesale();
+
+/**
+ * @brief Print a retail price report.
+ * @pre Inventory should be loaded.
+ * @post Retail report printed.
+ */
 void repRetail();
+
+/**
+ * @brief Report books by quantity on hand.
+ * @pre Inventory should be loaded.
+ * @post Quantities printed or summarized.
+ */
 void repQty();
+
+/**
+ * @brief Report the total cost/value of inventory.
+ * @pre Inventory should be loaded.
+ * @post Cost/valuation printed.
+ */
 void repCost();
+
+/**
+ * @brief Generate an age-based inventory report (by date added).
+ * @pre Inventory should be loaded and `dateAdded` should be parseable.
+ * @post Age-sorted or grouped report printed.
+ */
 void repAge();
 
 #endif
