@@ -15,7 +15,7 @@ CS1B – G2: Serendipity
  * metadata, quantities and pricing. Invariants: `qtyOnHand >= 0`,
  * `wholesale >= 0.0`, `retail >= 0.0`.
  *
- * @section uml BookType UML Overview
+ * @section uml_bookType BookType UML Overview
  * - Stereotype: «entity»
  * - Responsibilities: represent a single book record and enforce basic
  *   non-negative constraints on quantity and pricing.

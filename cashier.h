@@ -11,7 +11,7 @@ CS1B – G2: Serendipity
  * @file cashier.h
  * @brief Cashier mode entry point for processing sales and updating inventory.
  *
- * @section uml Cashier UML Overview
+ * @section uml_cashier Cashier UML Overview
  * - Stereotype: «control»
  * - Responsibilities: coordinate user interaction for selling books,
  *   computing totals, and adjusting inventory levels.

@@ -11,7 +11,7 @@ CS1B – G2: Serendipity
  * @file invmenu.h
  * @brief Inventory menu functions for the Serendipity application.
  *
- * @section uml InvMenu UML Overview
+ * @section uml_invMenu InvMenu UML Overview
  * - Stereotype: «control»
  * - Responsibilities: drive inventory-related workflows such as lookup,
  *   add, edit, and delete operations.

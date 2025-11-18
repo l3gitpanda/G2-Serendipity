@@ -2,7 +2,7 @@
  * @file bookinfo.h
  * @brief Helper to print or display detailed information about a bookType.
  *
- * @section uml BookInfo UML Overview
+ * @section uml_bookInfo BookInfo UML Overview
  * - Stereotype: «boundary»
  * - Responsibilities: present a single `bookType` instance in a
  *   human-friendly format.

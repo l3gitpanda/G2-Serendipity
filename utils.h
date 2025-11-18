@@ -11,7 +11,7 @@ CS1B – Serendipity
  * @file utils.h
  * @brief Utility helpers used across the Serendipity application.
  *
- * @section uml Utils UML Overview
+ * @section uml_utils Utils UML Overview
  * - Stereotype: «utility»
  * - Responsibilities: console framing, input helpers, parsing, and formatting
  * - Collaborators: uses standard I/O streams and C++ string utilities
