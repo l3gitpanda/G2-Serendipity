@@ -11,6 +11,13 @@ CS1B – G2: Serendipity
 /**
  * @file reports.h
  * @brief Reporting utilities: generate various inventory reports.
+ *
+ * @section uml Reports UML Overview
+ * - Stereotype: «boundary» / «control»
+ * - Responsibilities: offer a menu of inventory reports and render
+ *   summaries such as listings, wholesale totals, and age-based views.
+ * - Collaborators: reads from inventory data structures and uses
+ *   formatting helpers for monetary values and dates.
  */
 
 #ifndef REPORTS_H

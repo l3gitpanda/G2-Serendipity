@@ -14,6 +14,12 @@ CS1B – G2: Serendipity
  * The bookType class models a single book in inventory including identifying
  * metadata, quantities and pricing. Invariants: `qtyOnHand >= 0`,
  * `wholesale >= 0.0`, `retail >= 0.0`.
+ *
+ * @section uml BookType UML Overview
+ * - Stereotype: «entity»
+ * - Responsibilities: represent a single book record and enforce basic
+ *   non-negative constraints on quantity and pricing.
+ * - Collaborators: used by inventory menus, cashier, and reporting modules.
  */
 
 #ifndef BOOKTYPE_H
@@ -66,12 +72,50 @@ public:
    * @post `getISBN()` will return `isbnValue`.
    */
   void setISBN(const std::string &isbnValue);
+  /**
+   * @brief Set the title value.
+   * @param titleValue New title string.
+   * @post `getTitle()` will return `titleValue`.
+   */
   void setTitle(const std::string &titleValue);
+  /**
+   * @brief Set the author value.
+   * @param authorValue New author string.
+   * @post `getAuthor()` will return `authorValue`.
+   */
   void setAuthor(const std::string &authorValue);
+  /**
+   * @brief Set the publisher value.
+   * @param publisherValue New publisher string.
+   * @post `getPublisher()` will return `publisherValue`.
+   */
   void setPublisher(const std::string &publisherValue);
+  /**
+   * @brief Set the date the book was added.
+   * @param dateValue New date string.
+   * @post `getDateAdded()` will return `dateValue`.
+   */
   void setDateAdded(const std::string &dateValue);
+  /**
+   * @brief Set the quantity on hand.
+   * @param qtyValue New quantity value.
+   * @pre `qtyValue >= 0`.
+   * @post `getQtyOnHand()` will return `qtyValue`.
+   */
   void setQtyOnHand(int qtyValue);
+  /**
+   * @brief Set the wholesale price.
+   * @param wholesaleValue New wholesale price.
+   * @pre `wholesaleValue >= 0.0`.
+   * @post `getWholesale()` will return `wholesaleValue`.
+   */
   void setWholesale(double wholesaleValue);
+  /**
+   * @brief Set the retail price.
+   * @param retailValue New retail price.
+   * @pre `retailValue >= 0.0`.
+   * @post `getRetail()` will return `retailValue`.
+   */
   void setRetail(double retailValue);
 
   /**

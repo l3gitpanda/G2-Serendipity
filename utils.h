@@ -10,6 +10,11 @@ CS1B – Serendipity
 /**
  * @file utils.h
  * @brief Utility helpers used across the Serendipity application.
+ *
+ * @section uml Utils UML Overview
+ * - Stereotype: «utility»
+ * - Responsibilities: console framing, input helpers, parsing, and formatting
+ * - Collaborators: uses standard I/O streams and C++ string utilities
  */
 
 #ifndef UTILS_H
@@ -21,12 +26,15 @@ CS1B – Serendipity
 
 /**
  * @brief Clear the terminal screen (best-effort).
- * @post The terminal screen will be cleared if supported by the environment.
+ * @pre Standard output is available for writing.
+ * @post The terminal screen will be cleared if supported by the environment
+ *       (otherwise, output may contain only a newline or ANSI codes).
  */
 void clearScreen();
 
 /**
  * @brief Pause execution until the user presses Enter.
+ * @pre Standard input is available for reading.
  * @post Returns after a newline is read from stdin.
  */
 void pressEnterToContinue();
@@ -117,6 +125,8 @@ struct navigationMenu
  * @brief Trim leading/trailing whitespace from a string.
  * @param value Input string to trim.
  * @return New string with leading and trailing whitespace removed.
+ * @pre None.
+ * @post Return value contains no leading or trailing whitespace characters.
  */
 std::string trim(const std::string &value);
 
@@ -125,6 +135,10 @@ std::string trim(const std::string &value);
  * @param text Text to parse.
  * @param value Output reference set on success.
  * @return true if parsing succeeded and `value >= 0`.
+ * @pre `&value` is a valid pointer to an `int`.
+ * @post On success, `value` holds the parsed integer and the function
+ *       returns true; on failure, `value` is unchanged and the function
+ *       returns false.
  */
 bool parseNonNegativeInt(const std::string &text, int &value);
 
@@ -133,6 +147,10 @@ bool parseNonNegativeInt(const std::string &text, int &value);
  * @param text Text to parse.
  * @param value Output reference set on success.
  * @return true if parsing succeeded and `value >= 0.0`.
+ * @pre `&value` is a valid pointer to a `double`.
+ * @post On success, `value` holds the parsed double and the function
+ *       returns true; on failure, `value` is unchanged and the function
+ *       returns false.
  */
 bool parseNonNegativeDouble(const std::string &text, double &value);
 
@@ -140,6 +158,9 @@ bool parseNonNegativeDouble(const std::string &text, double &value);
  * @brief Rudimentary date validation for the project's date format.
  * @param value Date string to validate.
  * @return true if the value looks like a valid date for the project.
+ * @pre None.
+ * @post Returns a boolean indicating whether `value` satisfies the
+ *       expected `mm/dd/yyyy`-style constraints.
  */
 bool isValidDate(const std::string &value);
 
@@ -147,6 +168,9 @@ bool isValidDate(const std::string &value);
  * @brief Return a lower-cased copy of the input string.
  * @param value Input string.
  * @return Lower-cased copy of `value`.
+ * @pre None.
+ * @post Return value contains the same characters as `value`, converted
+ *       to lower-case using the current locale.
  */
 std::string toLowerCopy(const std::string &value);
 
@@ -154,6 +178,9 @@ std::string toLowerCopy(const std::string &value);
  * @brief Format a monetary value to a string with two decimal places.
  * @param value Numeric monetary amount.
  * @return Formatted money string (e.g., "12.34").
+ * @pre None.
+ * @post Return value is a fixed-format decimal string suitable for
+ *       display in reports and menus.
  */
 std::string formatMoney(double value);
 

@@ -10,6 +10,13 @@ CS1B – G2: Serendipity
 /**
  * @file invmenu.h
  * @brief Inventory menu functions for the Serendipity application.
+ *
+ * @section uml InvMenu UML Overview
+ * - Stereotype: «control»
+ * - Responsibilities: drive inventory-related workflows such as lookup,
+ *   add, edit, and delete operations.
+ * - Collaborators: uses `bookType` entities and utility functions for
+ *   formatting, validation, and user interaction.
  */
 
 #ifndef INV_MENU_H
@@ -25,7 +32,8 @@ void invMenu();
  * @brief Look up a book by ISBN or title.
  * @return index or id of the found book, or -1 if not found.
  * @pre Inventory must be available (in-memory or loadable from storage).
- * @post No modification to inventory is performed by a lookup.
+ * @post No modification to inventory is performed by a lookup; the selected
+ *       index may be used by edit/delete operations.
  */
 int lookUpBook();
 
