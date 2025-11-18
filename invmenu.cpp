@@ -491,7 +491,7 @@ namespace
             {
                 const std::string titleLower = toLowerCopy(book.getTitle());
                 const std::string isbnLower  = toLowerCopy(book.getISBN());
-                match = (titleLower.find(needle) != std::string::npos) &&
+                match = (titleLower.find(needle) != std::string::npos) ||
                         (isbnLower.find(needle) != std::string::npos);
             }
 
