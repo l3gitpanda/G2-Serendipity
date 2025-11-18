@@ -2,7 +2,7 @@
 CS1B – G2: Serendipity
   Partner A: Ian Bagherzadeh — role: InvMenu AddBook & bookinfo
   Partner B: Ryan Posey — role: lookUpBook
-  Date: 10/13/2025
+  Date: 11/16/2025
   Purpose: Inventory Menu
   Build:   g++ -std=c++20 -Werror mainmenu.cpp utils.cpp invmenu.cpp reports.cpp bookType.cpp cashier.cpp bookinfo.cpp -o serendipity.out
 */
