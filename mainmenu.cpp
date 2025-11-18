@@ -62,15 +62,12 @@ int main() {
 
         switch (selection) {
             case 1:
-                pressEnterToContinue();
                 cashier();
             break;
             case 2:
-                pressEnterToContinue();
                 invMenu();
             break;
             case 3:
-                pressEnterToContinue();
                 reports();
             break;
             default:
