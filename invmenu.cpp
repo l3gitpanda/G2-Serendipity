@@ -510,11 +510,53 @@ namespace
             for (std::size_t i = 0; i < matches.size(); ++i)
             {
                 const bookType &book = inventory[matches[i]];
-                std::cout << std::setw(2) << (i + 1) << ") "
-                          << book.getTitle() << " — " << book.getAuthor()
-                          << " — " << book.getISBN()
-                          << " — Qty: " << book.getQtyOnHand()
-                          << " — " << formatMoney(book.getRetail()) << '\n';
+
+                // Build the fixed suffix (author, ISBN, qty, price)
+                std::ostringstream suffix;
+                suffix << " — " << book.getAuthor()
+                       << " — " << book.getISBN()
+                       << " — Qty: " << book.getQtyOnHand()
+                       << " — " << formatMoney(book.getRetail());
+
+                const std::string prefix = (std::ostringstream() << std::setw(2) << (i + 1), std::string());
+
+                // Simpler prefix: index + ") "
+                const std::string idx = std::to_string(static_cast<int>(i + 1)) + ") ";
+
+                const std::string title = book.getTitle();
+                const std::string sufStr = suffix.str();
+
+                // We want the entire printed line to be no more than 80 chars.
+                const std::size_t maxLine = 80;
+
+                // Compute how many characters are available for the title.
+                std::size_t availForTitle = 0;
+                if (maxLine > idx.size() + sufStr.size())
+                {
+                    availForTitle = maxLine - idx.size() - sufStr.size();
+                }
+
+                std::string outTitle = title;
+                if (outTitle.size() > availForTitle)
+                {
+                    if (availForTitle > 3)
+                    {
+                        outTitle = outTitle.substr(0, availForTitle - 3) + "...";
+                    }
+                    else
+                    {
+                        // Not enough room for title; truncate suffix instead as fallback.
+                        outTitle = "";
+                    }
+                }
+
+                std::string line = idx + outTitle + sufStr;
+                if (line.size() > maxLine)
+                {
+                    line = line.substr(0, maxLine - 3) + "...";
+                }
+
+                std::cout << line << '\n';
             }
 
             const int returnIndex = static_cast<int>(matches.size()) + 1;

@@ -77,8 +77,8 @@ struct navigationMenu
     }
 
     /**
-     * @brief Print the menu and include a "0. Return" line at the bottom.
-     * @param backLabel Label text for the zero/return option.
+     * @brief Print the menu and include a "Return" line as the highest number.
+     * @param backLabel Label text for the return option.
      */
     void printWithBack(const std::string &backLabel = "Return to Previous Menu") const
     {
@@ -105,9 +105,10 @@ struct navigationMenu
             framed(opt);
         }
 
-        // 0 to return
-        std::string zero = std::string("0. ") + backLabel;
-        framed(zero);
+        // Return option is printed as the last (highest) number
+        int returnIndex = static_cast<int>(options.size()) + 1;
+        std::string ret = std::to_string(returnIndex) + ". " + backLabel;
+        framed(ret);
         border();
     }
 };
