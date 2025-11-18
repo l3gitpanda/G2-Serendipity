@@ -1000,7 +1000,6 @@ void addBook()
             if (draft.retail < draft.wholesale)
             {
                 std::cout << "Book added to database. Warning: Retail price is less than wholesale cost." << '\n';
-                pressEnterToContinue();
             }
 
             // If adding this book filled the inventory to capacity, return to
@@ -1015,7 +1014,6 @@ void addBook()
 
             // Normal successful add: notify and reset draft for another add.
             std::cout << "Book added to database." << '\n';
-            pressEnterToContinue();
             draft = BookDraft{};
             continue;
         }
