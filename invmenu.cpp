@@ -48,7 +48,8 @@ namespace
     enum class SearchType
     {
         Title = 1,
-        ISBN
+        ISBN,
+        TitleAndISBN
     };
 
     enum class DuplicateResolution
@@ -476,10 +477,25 @@ namespace
         for (std::size_t index = 0; index < inventory.size(); ++index)
         {
             const bookType &book = inventory[index];
-            std::string haystack =
-                (type == SearchType::Title) ? book.getTitle() : book.getISBN();
+            bool           match   = false;
 
-            if (toLowerCopy(haystack).find(needle) != std::string::npos)
+            if (type == SearchType::Title)
+            {
+                match = (toLowerCopy(book.getTitle()).find(needle) != std::string::npos);
+            }
+            else if (type == SearchType::ISBN)
+            {
+                match = (toLowerCopy(book.getISBN()).find(needle) != std::string::npos);
+            }
+            else if (type == SearchType::TitleAndISBN)
+            {
+                const std::string titleLower = toLowerCopy(book.getTitle());
+                const std::string isbnLower  = toLowerCopy(book.getISBN());
+                match = (titleLower.find(needle) != std::string::npos) &&
+                        (isbnLower.find(needle) != std::string::npos);
+            }
+
+            if (match)
             {
                 matches.push_back(static_cast<int>(index));
             }
@@ -502,9 +518,22 @@ namespace
             };
             std::cout << "DATABASE SIZE: " << kMaxInventory << '\n'
                       << "Books in Database: " << bookType::getBookCount() << "\n\n"
-                      << "Results for "
-                      << ((type == SearchType::Title) ? "Title" : "ISBN")
-                      << " \"" << query << "\"\n\n";
+                      << "Results for ";
+
+            switch (type)
+            {
+                case SearchType::Title:
+                    std::cout << "Title";
+                    break;
+                case SearchType::ISBN:
+                    std::cout << "ISBN";
+                    break;
+                case SearchType::TitleAndISBN:
+                    std::cout << "Title AND ISBN";
+                    break;
+            }
+
+            std::cout << " \"" << query << "\"\n\n";
             header.printWithBack("Return to Inventory Menu");
 
             for (std::size_t i = 0; i < matches.size(); ++i)
@@ -789,7 +818,8 @@ int lookUpBook()
             "Inventory Database - Look Up Book",
             {
                 "Search by Title",
-                "Search by ISBN"
+                "Search by ISBN",
+                "Search by Title AND ISBN"
             }
         };
         // Optional context above or below the menu
@@ -808,12 +838,12 @@ int lookUpBook()
         int selection = -1;
         if (!parseNonNegativeInt(modeInput, selection))
         {
-            std::cout << "\nPlease enter 1, 2, or 3.\n";
+            std::cout << "\nPlease enter 1, 2, 3, or 4.\n";
             pressEnterToContinue();
             continue;
         }
 
-        const int returnIndex = 2 + 1; // 2 options + return
+        const int returnIndex = 3 + 1; // 3 options + return
         SearchType mode;
         if (selection == returnIndex)
         {
@@ -828,14 +858,20 @@ int lookUpBook()
         {
             mode = SearchType::ISBN;
         }
+        else if (selection == 3)
+        {
+            mode = SearchType::TitleAndISBN;
+        }
         else
         {
-            std::cout << "\nPlease enter 1, 2, or 3.\n";
+            std::cout << "\nPlease enter 1, 2, 3, or 4.\n";
             pressEnterToContinue();
             continue;
         }
 
-        std::cout << ((mode == SearchType::Title) ? "Enter title" : "Enter ISBN")
+        std::cout << ((mode == SearchType::Title) ? "Enter title" :
+                      (mode == SearchType::ISBN) ? "Enter ISBN" :
+                      "Enter combined title/ISBN search term")
                   << " (press ENTER to cancel): ";
 
         std::string query;
