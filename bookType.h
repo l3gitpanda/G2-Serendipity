@@ -24,6 +24,7 @@ CS1B – G2: Serendipity
 
 #ifndef BOOKTYPE_H
 #define BOOKTYPE_H
+#include <cstddef>
 #include <iosfwd>
 #include <string>
 
@@ -38,7 +39,9 @@ CS1B – G2: Serendipity
  * - `wholesale`, `retail`: pricing values (non-negative).
  *
  * Constructors, copy/move operations and accessors are provided. Invariants:
- * `qtyOnHand >= 0`, `wholesale >= 0.0`, `retail >= 0.0`.
+ * `qtyOnHand >= 0`, `wholesale >= 0.0`, `retail >= 0.0`. Each constructor
+ * (including copy/move) increments the static record counter, and the
+ * destructor decrements it.
  */
 class bookType {
 public:
@@ -131,7 +134,12 @@ public:
   double getWholesale() const;
   double getRetail() const;
 
-  static int getBookCount();
+  /**
+   * @brief Get the number of live bookType records.
+   * @post Returned value equals the number of bookType instances currently
+   *       alive.
+   */
+  static std::size_t recordCount();
 
   /**
    * @brief Compare two bookType objects by ISBN (and other fields as needed).
@@ -155,7 +163,7 @@ private:
   double wholesale{0.0};
   double retail{0.0};
 
-  static int bookCount;
+  static std::size_t num_recs;
 };
 
 #endif // BOOKTYPE_H
