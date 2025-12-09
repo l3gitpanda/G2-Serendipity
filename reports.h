@@ -43,16 +43,29 @@ void repListing();
 
 /**
  * @brief Render the inventory listing for a vector-backed inventory.
- * @param books Collection of book pointers to render.
- * @param capacity Logical capacity of the backing storage.
+ * @param books Collection of book pointers to render; ownership stays with the
+ *              caller and each entry must be non-null.
+ * @param capacity Logical capacity of the backing storage, displayed in the
+ *                  header alongside the live record count.
+ *
+ * Displays tabular columns for title, ISBN, author, publisher, date added,
+ * quantity, wholesale, and retail. Output is paginated at ten rows per page;
+ * when more data remains, the function prompts for a key press before
+ * continuing to the next page.
  */
 void reportListing(const std::vector<bookType *> &books, std::size_t capacity);
 
 /**
  * @brief Render the inventory listing for a raw array of book pointers.
- * @param books Raw pointer array containing `count` entries.
- * @param count Number of valid book pointers.
- * @param capacity Logical capacity of the backing storage.
+ * @param books Raw pointer array containing `count` entries. Pointers are
+ *              treated as borrowed and must point to valid `bookType`
+ *              instances.
+ * @param count Number of valid book pointers stored in @p books.
+ * @param capacity Logical capacity of the backing storage, displayed in the
+ *                  header alongside the live record count.
+ *
+ * Provides the same paginated, ten-rows-per-page output as the vector-based
+ * overload.
  */
 void reportListing(bookType *const *books, std::size_t count, std::size_t capacity);
 

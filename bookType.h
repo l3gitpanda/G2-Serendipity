@@ -36,15 +36,22 @@ CS1B – G2: Serendipity
  * - `isbn`: unique identifier for the book.
  * - `title`, `author`, `publisher`, `dateAdded`: metadata strings.
  * - `qtyOnHand`: number of copies available (non-negative).
- * - `wholesale`, `retail`: pricing values (non-negative).
- *
- * Constructors, copy/move operations and accessors are provided. Invariants:
- * `qtyOnHand >= 0`, `wholesale >= 0.0`, `retail >= 0.0`. Each constructor
- * (including copy/move) increments the static record counter, and the
- * destructor decrements it.
- */
+  * - `wholesale`, `retail`: pricing values (non-negative).
+  *
+  * Constructors, copy/move operations and accessors are provided. Invariants:
+  * `qtyOnHand >= 0`, `wholesale >= 0.0`, `retail >= 0.0`. Each constructor
+  * (including copy/move) increments the static record counter, and the
+  * destructor decrements it.
+  */
 class bookType {
 public:
+  /**
+   * @brief Default-construct an empty record with zeroed quantities/prices.
+   *
+   * Increments the global `num_recs` counter so `recordCount()` reflects the
+   * live instance. Inventory containers allocate records with this constructor
+   * when creating placeholder entries.
+   */
   bookType();
   /**
    * @brief Full constructor for a book record.
@@ -57,16 +64,36 @@ public:
    * @param wholesale Wholesale cost. Must be >= 0.0.
    * @param retail Retail price. Must be >= 0.0.
    * @pre `qtyOnHand >= 0`, `wholesale >= 0.0`, `retail >= 0.0`.
-   * @post The book object contains the provided values.
+   * @post The book object contains the provided values and `num_recs` is
+   *       incremented to reflect the new live record.
    */
   bookType(const std::string &isbn, const std::string &title,
            const std::string &author, const std::string &publisher,
            const std::string &dateAdded, int qtyOnHand,
            double wholesale, double retail);
+  /**
+   * @brief Copy-construct a book record, cloning all fields.
+   *
+   * Useful when duplicating inventory entries; increments `num_recs` to keep
+   * the live-record count in sync with the additional copy.
+   */
   bookType(const bookType &other);
+  /**
+   * @brief Move-construct a book record by transferring stored values.
+   *
+   * Moves do not transfer ownership of any external resources (all fields are
+   * value types), but still increment `num_recs` because a new instance now
+   * exists in memory.
+   */
   bookType(bookType &&other) noexcept;
   bookType &operator=(const bookType &other);
   bookType &operator=(bookType &&other) noexcept;
+  /**
+   * @brief Destructor that decrements the static live-record counter.
+   *
+   * Inventory owners must delete dynamically allocated `bookType` objects to
+   * avoid leaks and to ensure `recordCount()` remains accurate.
+   */
   ~bookType();
 
   /**
@@ -136,8 +163,12 @@ public:
 
   /**
    * @brief Get the number of live bookType records.
-   * @post Returned value equals the number of bookType instances currently
-   *       alive.
+   *
+   * Each constructor increments and the destructor decrements the underlying
+   * `num_recs` counter. This accessor surfaces that value so reporting screens
+   * can display how many records are currently allocated. The result reflects
+   * accurate ownership cleanup—if callers forget to delete allocated
+   * instances, the count will stay artificially high.
    */
   static std::size_t recordCount();
 

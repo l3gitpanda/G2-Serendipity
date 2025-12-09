@@ -6,6 +6,19 @@
  * used as a CS1B group project. It supports adding, editing, deleting,
  * looking up books, generating reports and a cashier workflow.
  *
+ * @section data_model Inventory Data Model
+ * Serendipity keeps inventory in a pointer-backed container (`std::vector<bookType*>`).
+ * The inventory module owns these pointers outright: it allocates with `new` when a
+ * book is added and deletes each pointer when clearing the database, removing a record,
+ * or shutting down. No shared ownership is used—callers must never `delete` inventory
+ * pointers they did not allocate.
+ *
+ * The `bookType` class tracks the number of live records through the static
+ * `bookType::num_recs` counter. Every constructor (including copy/move) increments the
+ * counter when a new object is created, and the destructor decrements it when a record
+ * is destroyed. Calls to `bookType::recordCount()` return the current number of live
+ * records and are used by reports to show how many books exist.
+ *
  * @section usage Usage
  * Build the project and run `serendipity.out` to launch the console UI.
  * See the `Build/Run` section for compilation instructions.
