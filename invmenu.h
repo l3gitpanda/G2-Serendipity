@@ -63,4 +63,10 @@ void editBook();
  */
 void deleteBook();
 
+/**
+ * @brief Release all dynamically allocated inventory entries.
+ * @post Inventory container is emptied and memory for stored book records is freed.
+ */
+void cleanupInventory();
+
 #endif // INV_MENU_H

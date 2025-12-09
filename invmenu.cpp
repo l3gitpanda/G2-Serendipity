@@ -23,8 +23,8 @@ CS1B – G2: Serendipity
 namespace
 {
     constexpr std::size_t kMaxInventory = 20;
-    // Inventory container: std::vector limited to 20 entries.
-    std::vector<bookType> inventory;
+    // Inventory container: pointer-based vector limited to 20 entries.
+    std::vector<bookType *> inventory;
     std::deque<std::string> bufferedInputs;
 
     enum class FieldChoice
@@ -117,6 +117,15 @@ namespace
         {
             inventory.reserve(kMaxInventory);
         }
+    }
+
+    void clearInventory()
+    {
+        for (bookType *book : inventory)
+        {
+            delete book;
+        }
+        inventory.clear();
     }
 
     std::string fieldLabel(FieldChoice choice)
@@ -476,7 +485,7 @@ namespace
 
         for (std::size_t index = 0; index < inventory.size(); ++index)
         {
-            const bookType &book = inventory[index];
+            const bookType &book = *inventory[index];
             bool           match   = false;
 
             if (type == SearchType::Title)
@@ -538,7 +547,7 @@ namespace
 
             for (std::size_t i = 0; i < matches.size(); ++i)
             {
-                const bookType &book = inventory[matches[i]];
+                const bookType &book = *inventory[matches[i]];
 
                 // Build the fixed suffix (author, ISBN, qty, price)
                 std::ostringstream suffix;
@@ -626,7 +635,7 @@ namespace
             }
 
             int inventoryIndex = matches[selection - 1];
-            bookInfo(inventory[inventoryIndex]);
+            bookInfo(*inventory[inventoryIndex]);
             return inventoryIndex;
         }
     }
@@ -641,7 +650,7 @@ namespace
 
         for (std::size_t index = 0; index < inventory.size(); ++index)
         {
-            std::string candidate = toLowerCopy(trim(inventory[index].getISBN()));
+            std::string candidate = toLowerCopy(trim(inventory[index]->getISBN()));
             if (candidate == needle)
             {
                 return index;
@@ -653,7 +662,7 @@ namespace
 
     DuplicateResolution resolveDuplicateISBN(std::size_t existingIndex, const BookDraft &draft)
     {
-        const bookType &existing = inventory[existingIndex];
+        const bookType &existing = *inventory[existingIndex];
 
         while (true)
         {
@@ -700,10 +709,10 @@ namespace
 
             if (selection == 2)
             {
-                inventory[existingIndex].setQtyOnHand(existing.getQtyOnHand() + draft.quantity);
+                inventory[existingIndex]->setQtyOnHand(existing.getQtyOnHand() + draft.quantity);
 
                 std::cout << "\nQuantity increased by " << draft.quantity
-                          << ". New quantity: " << inventory[existingIndex].getQtyOnHand() << ".\n";
+                          << ". New quantity: " << inventory[existingIndex]->getQtyOnHand() << ".\n";
                 pressEnterToContinue();
                 return DuplicateResolution::CompletedAdd;
             }
@@ -986,7 +995,7 @@ void addBook()
                 }
             }
 
-            inventory.emplace_back(
+            inventory.push_back(new bookType(
                 draft.isbn,
                 draft.title,
                 draft.author,
@@ -994,7 +1003,7 @@ void addBook()
                 draft.dateAdded,
                 draft.quantity,
                 draft.wholesale,
-                draft.retail);
+                draft.retail));
 
             // If retail is less than wholesale, warn the user but still add.
             if (draft.retail < draft.wholesale)
@@ -1051,7 +1060,7 @@ void editBook()
         return;
     }
 
-    BookDraft draft = createDraftFromBook(inventory[static_cast<std::size_t>(selectedIndex)]);
+    BookDraft draft = createDraftFromBook(*inventory[static_cast<std::size_t>(selectedIndex)]);
     std::string statusMessage =
         "Select a field number to edit. Leave a field blank while editing to cancel that entry.";
 
@@ -1103,7 +1112,7 @@ void editBook()
                 continue;
             }
 
-            bookType &book = inventory[static_cast<std::size_t>(selectedIndex)];
+            bookType &book = *inventory[static_cast<std::size_t>(selectedIndex)];
             book.setTitle(draft.title);
             book.setISBN(draft.isbn);
             book.setAuthor(draft.author);
@@ -1160,7 +1169,7 @@ void deleteBook()
     {
         clearScreen();
 
-        const bookType &book = inventory[static_cast<std::size_t>(selectedIndex)];
+        const bookType &book = *inventory[static_cast<std::size_t>(selectedIndex)];
         std::cout << "Serendipity Booksellers\n\n"
                   << "Delete Book\n\n"
                   << "Title : " << book.getTitle() << '\n'
@@ -1181,6 +1190,7 @@ void deleteBook()
         std::string normalized = toLowerCopy(trim(confirmation));
         if (normalized == "y" || normalized == "yes")
         {
+            delete inventory[static_cast<std::size_t>(selectedIndex)];
             inventory.erase(inventory.begin() + selectedIndex);
             std::cout << "\nBook deleted from inventory.\n";
             pressEnterToContinue();
@@ -1197,4 +1207,9 @@ void deleteBook()
         std::cout << "\nPlease enter 'y' or 'n'.\n";
         pressEnterToContinue();
     }
+}
+
+void cleanupInventory()
+{
+    clearInventory();
 }
