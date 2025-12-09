@@ -49,9 +49,11 @@ void repListing();
  *                  header alongside the live record count.
  *
  * Displays tabular columns for title, ISBN, author, publisher, date added,
- * quantity, wholesale, and retail. Output is paginated at ten rows per page;
- * when more data remains, the function prompts for a key press before
- * continuing to the next page.
+ * quantity, wholesale, and retail. Each page shows "REPORT LISTING" with the
+ * current date, page X of Y, and both the configured database size and the
+ * live `bookType::recordCount()`. Output is paginated at ten rows per page; if
+ * more data remains, the function prompts for a key press before continuing to
+ * the next page.
  */
 void reportListing(const std::vector<bookType *> &books, std::size_t capacity);
 
@@ -64,8 +66,8 @@ void reportListing(const std::vector<bookType *> &books, std::size_t capacity);
  * @param capacity Logical capacity of the backing storage, displayed in the
  *                  header alongside the live record count.
  *
- * Provides the same paginated, ten-rows-per-page output as the vector-based
- * overload.
+ * Provides the same paginated, ten-rows-per-page output, page header, and
+ * continuation prompt as the vector-based overload.
  */
 void reportListing(bookType *const *books, std::size_t count, std::size_t capacity);
 
