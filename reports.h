@@ -23,6 +23,11 @@ CS1B – G2: Serendipity
 #ifndef REPORTS_H
 #define REPORTS_H
 
+#include <cstddef>
+#include <vector>
+
+#include "bookType.h"
+
 /**
  * @brief Entry point for the reports menu.
  * @post Control returns to the caller after the selected report is displayed.
@@ -35,6 +40,21 @@ void reports();
  * @post The listing is printed to stdout or configured output.
  */
 void repListing();
+
+/**
+ * @brief Render the inventory listing for a vector-backed inventory.
+ * @param books Collection of book pointers to render.
+ * @param capacity Logical capacity of the backing storage.
+ */
+void reportListing(const std::vector<bookType *> &books, std::size_t capacity);
+
+/**
+ * @brief Render the inventory listing for a raw array of book pointers.
+ * @param books Raw pointer array containing `count` entries.
+ * @param count Number of valid book pointers.
+ * @param capacity Logical capacity of the backing storage.
+ */
+void reportListing(bookType *const *books, std::size_t count, std::size_t capacity);
 
 /**
  * @brief Print a wholesale-cost report.

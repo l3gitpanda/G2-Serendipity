@@ -7,8 +7,13 @@ CS1B – G2: Serendipity
   Build:   g++ -std=c++20 -Werror mainmenu.cpp utils.cpp invmenu.cpp reports.cpp bookType.cpp cashier.cpp bookinfo.cpp -o serendipity.out
 */
 
+#include <iomanip>
 #include <iostream>
+#include <iterator>
 #include <string>
+#include <vector>
+
+#include "invmenu.h"
 #include "reports.h"
 #include "utils.h"
 using namespace std;
@@ -36,8 +41,8 @@ void reports()
     while (running)
     {
         clearScreen();
-    printReportsMenu();
-    cout << "Enter Your Choice: ";
+        printReportsMenu();
+        cout << "Enter Your Choice: ";
 
         string input;
         getline(cin, input);
@@ -99,8 +104,124 @@ void reports()
     }
 }
 
+namespace
+{
+    struct Column
+    {
+        std::string heading;
+        std::size_t width;
+    };
+
+    std::string truncateField(const std::string &value, std::size_t width)
+    {
+        if (value.size() <= width)
+        {
+            return value;
+        }
+
+        if (width <= 3)
+        {
+            return value.substr(0, width);
+        }
+
+        return value.substr(0, width - 3) + "...";
+    }
+
+    void printReportHeader(std::size_t capacity)
+    {
+        std::cout << "Serendipity Booksellers\n";
+        std::cout << "Inventory Listing\n";
+        std::cout << "Database Capacity: " << capacity << '\n';
+        std::cout << "Books in Database: " << bookType::recordCount() << "\n\n";
+    }
+
+    template <typename Iterator>
+    void reportListingImpl(Iterator begin, Iterator end, std::size_t capacity)
+    {
+        const std::vector<Column> columns = {
+            {"TITLE", 30},
+            {"ISBN", 13},
+            {"AUTHOR", 18},
+            {"PUBLISHER", 18},
+            {"DATE ADDED", 12},
+            {"QTY O/H", 8},
+            {"WHOLESALE", 11},
+            {"RETAIL", 11},
+        };
+
+        auto printColumnHeadings = [&]() {
+            for (const auto &col : columns)
+            {
+                std::cout << std::left << std::setw(static_cast<int>(col.width)) << col.heading << ' ';
+            }
+            std::cout << "\n";
+            for (const auto &col : columns)
+            {
+                std::cout << std::string(col.width, '-') << ' ';
+            }
+            std::cout << "\n";
+        };
+
+        const auto total = static_cast<std::size_t>(std::distance(begin, end));
+        if (total == 0)
+        {
+            printReportHeader(capacity);
+            printColumnHeadings();
+            std::cout << "(no books to display)\n";
+            return;
+        }
+
+        Iterator current = begin;
+        while (current != end)
+        {
+            printReportHeader(capacity);
+            printColumnHeadings();
+
+            std::size_t linesThisPage = 0;
+            while (current != end && linesThisPage < 10)
+            {
+                const bookType *book = *current;
+                ++current;
+                ++linesThisPage;
+                std::cout << std::left
+                          << std::setw(30) << truncateField(book->getTitle(), 30) << ' '
+                          << std::setw(13) << truncateField(book->getISBN(), 13) << ' '
+                          << std::setw(18) << truncateField(book->getAuthor(), 18) << ' '
+                          << std::setw(18) << truncateField(book->getPublisher(), 18) << ' '
+                          << std::setw(12) << truncateField(book->getDateAdded(), 12) << ' '
+                          << std::right << std::setw(8) << book->getQtyOnHand() << ' '
+                          << std::right << std::setw(11) << formatMoney(book->getWholesale()) << ' '
+                          << std::right << std::setw(11) << formatMoney(book->getRetail()) << '\n';
+                std::cout << std::left; // reset alignment for text columns
+            }
+
+            if (current != end)
+            {
+                std::cout << "\nPress any key to continue ...";
+                std::cout.flush();
+                std::cin.get();
+                clearScreen();
+            }
+        }
+    }
+} // namespace
+
+void repListing()
+{
+    reportListing(inventoryData(), inventoryCapacity());
+}
+
+void reportListing(const std::vector<bookType *> &books, std::size_t capacity)
+{
+    reportListingImpl(books.begin(), books.end(), capacity);
+}
+
+void reportListing(bookType *const *books, std::size_t count, std::size_t capacity)
+{
+    reportListingImpl(books, books + count, capacity);
+}
+
 // ----- Report stubs -----
-void repListing()   { cout << "Inventory Listing selected.\n"; }
 void repWholesale() { cout << "Inventory Wholesale Value selected.\n"; }
 void repRetail()    { cout << "Inventory Retail Value selected.\n"; }
 void repQty()       { cout << "Listing by Quantity selected.\n"; }

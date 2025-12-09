@@ -22,6 +22,11 @@ CS1B – G2: Serendipity
 #ifndef INV_MENU_H
 #define INV_MENU_H
 
+#include <cstddef>
+#include <vector>
+
+#include "bookType.h"
+
 /**
  * @brief Launch the inventory management menu.
  * @post Control returns to the main menu when the user exits the inventory menu.
@@ -68,5 +73,16 @@ void deleteBook();
  * @post Inventory container is emptied and memory for stored book records is freed.
  */
 void cleanupInventory();
+
+/**
+ * @brief Access the live inventory container.
+ * @return Reference to the vector of book pointers backing the inventory menu.
+ */
+const std::vector<bookType *> &inventoryData();
+
+/**
+ * @brief Report the maximum configured inventory capacity.
+ */
+std::size_t inventoryCapacity();
 
 #endif // INV_MENU_H
