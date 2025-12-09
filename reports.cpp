@@ -7,9 +7,12 @@ CS1B – G2: Serendipity
   Build:   g++ -std=c++20 -Werror mainmenu.cpp utils.cpp invmenu.cpp reports.cpp bookType.cpp cashier.cpp bookinfo.cpp -o serendipity.out
 */
 
+#include <chrono>
+#include <ctime>
 #include <iomanip>
 #include <iostream>
 #include <iterator>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -127,12 +130,31 @@ namespace
         return value.substr(0, width - 3) + "...";
     }
 
-    void printReportHeader(std::size_t capacity)
+    std::string currentDateString()
     {
-        std::cout << "Serendipity Booksellers\n";
-        std::cout << "Inventory Listing\n";
-        std::cout << "Database Capacity: " << capacity << '\n';
-        std::cout << "Books in Database: " << bookType::recordCount() << "\n\n";
+        const std::time_t now = std::chrono::system_clock::to_time_t(
+            std::chrono::system_clock::now());
+
+        std::tm local{};
+#if defined(_WIN32)
+        localtime_s(&local, &now);
+#else
+        localtime_r(&now, &local);
+#endif
+
+        std::ostringstream oss;
+        oss << std::put_time(&local, "%m/%d/%Y");
+        return oss.str();
+    }
+
+    void printReportHeader(std::size_t capacity, std::size_t pageNumber, std::size_t totalPages,
+                           const std::string &dateString)
+    {
+        std::cout << "Serendipity Booksellers - REPORT LISTING\n";
+        std::cout << "Date: " << dateString << "    Page " << pageNumber << " of " << totalPages
+                  << "\n";
+        std::cout << "DATABASE SIZE: " << capacity
+                  << "    CURRENT BOOK COUNT: " << bookType::recordCount() << "\n\n";
     }
 
     template <typename Iterator>
@@ -163,18 +185,22 @@ namespace
         };
 
         const auto total = static_cast<std::size_t>(std::distance(begin, end));
+        const std::size_t totalPages = total == 0 ? 1 : (total + 9) / 10;
+        const std::string dateString  = currentDateString();
+
         if (total == 0)
         {
-            printReportHeader(capacity);
+            printReportHeader(capacity, 1, totalPages, dateString);
             printColumnHeadings();
             std::cout << "(no books to display)\n";
             return;
         }
 
         Iterator current = begin;
+        std::size_t pageNumber = 1;
         while (current != end)
         {
-            printReportHeader(capacity);
+            printReportHeader(capacity, pageNumber, totalPages, dateString);
             printColumnHeadings();
 
             std::size_t linesThisPage = 0;
@@ -201,6 +227,7 @@ namespace
                 std::cout.flush();
                 std::cin.get();
                 clearScreen();
+                ++pageNumber;
             }
         }
     }

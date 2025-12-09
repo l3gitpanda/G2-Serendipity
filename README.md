@@ -19,6 +19,13 @@
  * is destroyed. Calls to `bookType::recordCount()` return the current number of live
  * records and are used by reports to show how many books exist.
  *
+ * @section reports Reporting & Pagination
+ * The **Report Listing** view paginates output ten rows per page and prints a header on
+ * each page that includes the store name, "REPORT LISTING", the current date, and page
+ * X of Y metadata. The header also echoes the configured database capacity alongside the
+ * live `bookType::recordCount()` value so the pointer-backed ownership model is visible
+ * during reports.
+ *
  * @section usage Usage
  * Build the project and run `serendipity.out` to launch the console UI.
  * See the `Build/Run` section for compilation instructions.
