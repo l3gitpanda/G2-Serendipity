@@ -41,6 +41,7 @@ int main() {
 
         cout << "Choose an option: ";
         if (!std::getline(cin, input)) {
+            cleanupInventory();
             return 0;
         }
 
@@ -57,6 +58,7 @@ int main() {
         if (selection == returnIndex)
         {
             pressEnterToContinue();
+            cleanupInventory();
             return 0;
         }
 
@@ -82,4 +84,7 @@ int main() {
         and that would save memory, but using a variable instead increases
         readability
     */
+
+    cleanupInventory();
+    return 0;
 }
