@@ -12,12 +12,9 @@ CS1B – G2: Serendipity
 #include <iomanip>
 #include <iostream>
 
-int bookType::bookCount = 0;
+std::size_t bookType::num_recs = 0;
 
-bookType::bookType()
-{
-  ++bookCount;
-}
+bookType::bookType() { ++num_recs; }
 
 bookType::bookType(const std::string &isbnValue, const std::string &titleValue,
                    const std::string &authorValue, const std::string &publisherValue,
@@ -26,7 +23,7 @@ bookType::bookType(const std::string &isbnValue, const std::string &titleValue,
   : isbn(isbnValue), title(titleValue), author(authorValue), publisher(publisherValue),
     dateAdded(dateValue), qtyOnHand(qtyValue), wholesale(wholesaleValue), retail(retailValue)
 {
-  ++bookCount;
+  ++num_recs;
 }
 
 bookType::bookType(const bookType &other)
@@ -34,7 +31,7 @@ bookType::bookType(const bookType &other)
     publisher(other.publisher), dateAdded(other.dateAdded),
     qtyOnHand(other.qtyOnHand), wholesale(other.wholesale), retail(other.retail)
 {
-  ++bookCount;
+  ++num_recs;
 }
 
 bookType::bookType(bookType &&other) noexcept
@@ -42,7 +39,7 @@ bookType::bookType(bookType &&other) noexcept
     publisher(other.publisher), dateAdded(other.dateAdded),
     qtyOnHand(other.qtyOnHand), wholesale(other.wholesale), retail(other.retail)
 {
-  ++bookCount;
+  ++num_recs;
 }
 
 bookType &bookType::operator=(const bookType &other)
@@ -77,10 +74,7 @@ bookType &bookType::operator=(bookType &&other) noexcept
   return *this;
 }
 
-bookType::~bookType()
-{
-  --bookCount;
-}
+bookType::~bookType() { --num_recs; }
 
 void bookType::setISBN(const std::string &isbnValue) { isbn = isbnValue; }
 void bookType::setTitle(const std::string &titleValue) { title = titleValue; }
@@ -100,10 +94,7 @@ int bookType::getQtyOnHand() const { return qtyOnHand; }
 double bookType::getWholesale() const { return wholesale; }
 double bookType::getRetail() const { return retail; }
 
-int bookType::getBookCount()
-{
-  return bookCount;
-}
+std::size_t bookType::recordCount() { return num_recs; }
 
 bool bookType::equals(const bookType &other) const
 {

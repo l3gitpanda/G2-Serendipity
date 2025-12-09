@@ -224,7 +224,7 @@ namespace
         {
             std::ostringstream oss;
             oss << "DATABASE SIZE: " << kMaxInventory
-                << " CURRENT BOOK COUNT: " << bookType::getBookCount();
+                << " CURRENT BOOK COUNT: " << bookType::recordCount();
             framed(oss.str());
         }
         blank();
@@ -526,7 +526,7 @@ namespace
                 {}
             };
             std::cout << "DATABASE SIZE: " << kMaxInventory << '\n'
-                      << "Books in Database: " << bookType::getBookCount() << "\n\n"
+                      << "Books in Database: " << bookType::recordCount() << "\n\n"
                       << "Results for ";
 
             switch (type)
@@ -833,7 +833,7 @@ int lookUpBook()
         };
         // Optional context above or below the menu
         std::cout << "DATABASE SIZE: " << kMaxInventory << '\n'
-                  << "Books in Database: " << bookType::getBookCount() << "\n\n";
+                  << "Books in Database: " << bookType::recordCount() << "\n\n";
     menu.printWithBack("Return to Inventory Menu");
     std::cout << "Choice: ";
 
