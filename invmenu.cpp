@@ -556,23 +556,39 @@ namespace
                        << " — Qty: " << book.getQtyOnHand()
                        << " — " << formatMoney(book.getRetail());
 
-                const std::string prefix = (std::ostringstream() << std::setw(2) << (i + 1), std::string());
-
                 // Simpler prefix: index + ") "
                 const std::string idx = std::to_string(static_cast<int>(i + 1)) + ") ";
 
                 const std::string title = book.getTitle();
-                const std::string sufStr = suffix.str();
+                std::string       sufStr = suffix.str();
 
-                // We want the entire printed line to be no more than 80 chars.
-                const std::size_t maxLine = 80;
+                // We want the entire printed line to be no more than 80 chars and always
+                // show at least part of the title even when the suffix is long.
+                const std::size_t maxLine       = 80;
+                const std::size_t minTitleWidth = 10;
+                const std::size_t spaceForItems = (maxLine > idx.size()) ? maxLine - idx.size() : 0;
 
-                // Compute how many characters are available for the title.
-                std::size_t availForTitle = 0;
-                if (maxLine > idx.size() + sufStr.size())
+                std::size_t maxSuffixWidth = 0;
+                if (spaceForItems > minTitleWidth)
                 {
-                    availForTitle = maxLine - idx.size() - sufStr.size();
+                    maxSuffixWidth = spaceForItems - minTitleWidth;
                 }
+
+                if (sufStr.size() > maxSuffixWidth)
+                {
+                    if (maxSuffixWidth > 3)
+                    {
+                        sufStr = sufStr.substr(0, maxSuffixWidth - 3) + "...";
+                    }
+                    else
+                    {
+                        sufStr = sufStr.substr(0, maxSuffixWidth);
+                    }
+                }
+
+                const std::size_t availForTitle = (spaceForItems > sufStr.size())
+                                                     ? spaceForItems - sufStr.size()
+                                                     : 0;
 
                 std::string outTitle = title;
                 if (outTitle.size() > availForTitle)
@@ -583,17 +599,11 @@ namespace
                     }
                     else
                     {
-                        // Not enough room for title; truncate suffix instead as fallback.
-                        outTitle = "";
+                        outTitle = outTitle.substr(0, availForTitle);
                     }
                 }
 
                 std::string line = idx + outTitle + sufStr;
-                if (line.size() > maxLine)
-                {
-                    line = line.substr(0, maxLine - 3) + "...";
-                }
-
                 std::cout << line << '\n';
             }
 
