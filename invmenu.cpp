@@ -1213,3 +1213,13 @@ void cleanupInventory()
 {
     clearInventory();
 }
+
+const std::vector<bookType *> &inventoryData()
+{
+    return inventory;
+}
+
+std::size_t inventoryCapacity()
+{
+    return kMaxInventory;
+}
